@@ -1,14 +1,9 @@
 'use client';
 
-import { useRouter } from "next/navigation";
+import { useCustomRouter } from "@/utils";
 
 export default function LogIn() {
-
-  const router = useRouter();
-
-  function goTo(url: string) { router.push(url); }
-
-  function goToLogin() { goTo('/home'); }
+  const { goHome } = useCustomRouter();
 
   function handleOnSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -19,7 +14,7 @@ export default function LogIn() {
     console.log(username, password);
 
     // TODO: Implement login logic
-    if(true) { goToLogin(); }
+    if(true) { goHome(); }
   }
 
   return (

@@ -1,15 +1,20 @@
 'use client'
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { WordCard } from "@/components/molecules";
 import { WordDTO } from "@/models";
-import { WORD_EXAMPLES } from "@/contants";
+import { WORD_EXAMPLES, WORD_DEFAULT_VALUES, WORD_DEFAULT_VALUES_ON_ADD } from "@/contants";
 import { WordDrawer } from "@/components/molecules";
+import { useCustomRouter } from "@/utils";
+import { useAPI } from "@/api";
 
 export default function Home() {
 
   const [search, setSearch] = useState('');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [wordData, setWordData] = useState<WordDTO>(WORD_DEFAULT_VALUES);
+  const { goLogin } = useCustomRouter();
+  const { isLoading, error, response, submit } = useAPI();
 
   function handleOnDelete(wordId: number) {
     const response = confirm('Are you sure you want to delete this word?');
@@ -19,9 +24,7 @@ export default function Home() {
   }
 
   function handleOnEdit(word: WordDTO) {
-    // open bottom drawer to edit word
-    console.log(`Editing word: ${word.word}`);
-    setIsDrawerOpen(true);
+    setWordData(word);
   }
 
   function handleOnSearch() {
@@ -29,19 +32,31 @@ export default function Home() {
   }
 
   function handleAddWord() {
-    // open right drawer to add word
+    setWordData(WORD_DEFAULT_VALUES_ON_ADD);
   }
 
   function handleCloseDrawer() {
+    setWordData(WORD_DEFAULT_VALUES);
     setIsDrawerOpen(false);
   };
 
+  function handleOnSubmit(form: WordDTO) {
+    console.log('Word data:', form);
+    submit('PUT_WORD', form);
+    setIsDrawerOpen(false);
+  }
+
+  useEffect(() => {
+    if(wordData.word === WORD_DEFAULT_VALUES.word) return;
+    setIsDrawerOpen(true);
+  }, [wordData]);
+
   return (
-    <main className="p-4">
+    <main>
       <article className="flex flex-col">
         <section className="flex flex-row justify-between">
           <h1 className="text-center text-2xl">Hola user</h1>
-          <button className="bg-red-500 rounded-md p-2 text-white font-bold">salir</button>
+          <button onClick={goLogin} className="bg-red-500 rounded-md p-2 text-white font-bold">salir</button>
         </section>
         <section className="flex max-sm:flex-col sm:flex-row items-center justify-center gap-2">
           <input
@@ -76,6 +91,8 @@ export default function Home() {
       <WordDrawer
         isOpen={isDrawerOpen}
         onClose={handleCloseDrawer}
+        data={wordData}
+        onSubmit={(form: WordDTO) => handleOnSubmit(form)}
       />
     </main>
   )
