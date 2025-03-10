@@ -7,6 +7,13 @@ export enum DrawerDirection {
   RIGHT_TO_LEFT = 'right-to-left',
 }
 
+const DRAWER_DIRECTIONS = {
+  [DrawerDirection.TOP_TO_BOTTOM]: 'top-0 left-0 right-0 h-1/2',
+  [DrawerDirection.BOTTOM_TO_TOP]: 'bottom-0 left-0 right-0 h-1/2',
+  [DrawerDirection.LEFT_TO_RIGHT]: 'top-0 left-0 bottom-0 w-1/2',
+  [DrawerDirection.RIGHT_TO_LEFT]: 'top-0 right-0 bottom-0 w-1/2',
+}
+
 export interface DrawerProps {
   direction: DrawerDirection;
   children: React.ReactNode;
@@ -18,7 +25,7 @@ export default function Drawer({
   direction,
   children,
   onClose,
-  isOpen, 
+  isOpen,
 }: DrawerProps) {
 
   useEffect(() => {
@@ -34,19 +41,8 @@ export default function Drawer({
     };
   }, [onClose]);
 
-  const getDrawerStyles = () => {
-    switch (direction) {
-      case DrawerDirection.TOP_TO_BOTTOM:
-        return 'top-0 left-0 right-0 h-1/2';
-      case DrawerDirection.BOTTOM_TO_TOP:
-        return 'bottom-0 left-0 right-0 h-1/2';
-      case DrawerDirection.LEFT_TO_RIGHT:
-        return 'top-0 left-0 bottom-0 w-1/2';
-      case DrawerDirection.RIGHT_TO_LEFT:
-        return 'top-0 right-0 bottom-0 w-1/2';
-      default:
-        return '';
-    }
+  const getDrawerStyles = (directionValue: DrawerDirection) => {
+    return DRAWER_DIRECTIONS[directionValue];
   };
 
   const getCloseButtonPosition = () => {
@@ -65,7 +61,7 @@ export default function Drawer({
   return (
     isOpen &&
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className={`drawer-content fixed bg-white shadow-lg ${getDrawerStyles()}`}>
+      <div className={`drawer-content fixed bg-white shadow-lg ${getDrawerStyles(direction)}`}>
         <button
           className={`absolute ${getCloseButtonPosition()} p-2 bg-red-500 text-white rounded`}
           onClick={onClose}
