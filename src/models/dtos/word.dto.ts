@@ -1,5 +1,5 @@
 import IWord from "../interfaces/word.interface";
 
 export default interface WordDTO extends IWord {
-  id: number | null;
+  _id: number | string | null;
 }
