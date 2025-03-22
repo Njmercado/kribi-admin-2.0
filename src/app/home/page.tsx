@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react"
 import { WordCard } from "@/components/molecules";
-import { WordDTO } from "@/models";
-import { WORD_EXAMPLES, WORD_DEFAULT_VALUES, WORD_DEFAULT_VALUES_ON_ADD } from "@/contants";
+import { SpanishWordDTO, WordDTO } from "@/models";
+import { WORD_DEFAULT_VALUES, WORD_DEFAULT_VALUES_ON_ADD, SUBMIT_ACTIONS, SubmitAction } from "@/contants";
 import { WordDrawer } from "@/components/molecules";
 import { useCustomRouter } from "@/utils";
-import { useAPI } from "@/api";
+import { useSubmitAPI, useGetAPI } from "@/api";
 
 export default function Home() {
 
@@ -14,7 +14,8 @@ export default function Home() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [wordData, setWordData] = useState<WordDTO>(WORD_DEFAULT_VALUES);
   const { goLogin } = useCustomRouter();
-  const { isLoading, error, response, submit } = useAPI();
+  const { isLoading: putWordIsLoading, error: putWordError, response: putWordResponse, putWord} = useSubmitAPI();
+  const { response: getWordsResponse, getWords} = useGetAPI();
 
   function handleOnDelete(wordId: number) {
     const response = confirm('Are you sure you want to delete this word?');
@@ -27,8 +28,8 @@ export default function Home() {
     setWordData(word);
   }
 
-  function handleOnSearch() {
-    // TODO: Develop logic to search word
+  async function handleOnSearch() {
+    getWords(search);
   }
 
   function handleAddWord() {
@@ -40,11 +41,18 @@ export default function Home() {
     setIsDrawerOpen(false);
   };
 
-  function handleOnSubmit(form: WordDTO) {
-    console.log('Word data:', form);
-    submit('PUT_WORD', form);
-    setIsDrawerOpen(false);
+  function handleOnSubmit(form: SpanishWordDTO, action: SubmitAction) {
+    if(action === SUBMIT_ACTIONS.ADD) { form._id = '-1' }
+    putWord(form);
   }
+
+  // Close the drawer when the word is added/updated
+  // TODO: Show error message when the word is not added/updated
+  useEffect(() => {
+    if(putWordResponse && putWordIsLoading === false) {
+      handleCloseDrawer();
+    }
+  }, [putWordIsLoading, putWordError, putWordResponse]);
 
   useEffect(() => {
     if(wordData.word === WORD_DEFAULT_VALUES.word) return;
@@ -73,7 +81,7 @@ export default function Home() {
       </article>
       <article className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
         {
-          WORD_EXAMPLES.words.map((word: WordDTO, index: number) => (
+          getWordsResponse?.map((word: WordDTO, index: number) => (
             <WordCard
               key={index}
               word={word.word}
@@ -92,7 +100,7 @@ export default function Home() {
         isOpen={isDrawerOpen}
         onClose={handleCloseDrawer}
         data={wordData}
-        onSubmit={(form: WordDTO) => handleOnSubmit(form)}
+        onSubmit={(form: SpanishWordDTO, action: SubmitAction) => handleOnSubmit(form, action)}
       />
     </main>
   )
