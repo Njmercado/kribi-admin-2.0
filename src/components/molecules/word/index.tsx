@@ -5,6 +5,10 @@ import { IWord } from "@/models";
 export interface WordCardProps extends IWord {
   onDelete: () => void;
   onEdit: () => void;
+  definitions: string[];
+  examples: string[];
+  translations: string[];
+  type: string;
 }
 
 export default function WordCard({
