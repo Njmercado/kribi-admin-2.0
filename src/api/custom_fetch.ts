@@ -10,26 +10,28 @@ export default class CustomFetch {
     }
   }
 
-  private fetchTemplate<T>(path: string, method: 'GET' | 'POST' | 'PUT', body?: object | T) {
-    return fetch(
-      `${API_URL}/${path}`,
-      {
-        headers: HEADERS,
-        method,
-        ...( body && { body: JSON.stringify(body) } )
-      }
-    )
+  private async fetchTemplate<T>(path: string, method: 'GET' | 'POST' | 'PUT', body?: object | T) {
+    return await (
+      await fetch(
+        `${API_URL}/${path}`,
+        {
+          headers: HEADERS,
+          method,
+          ...(body && { body: JSON.stringify(body) })
+        }
+      )
+    ).json()
   }
 
   async get<T>(path: string, body?: object | T) {
-    return await (await this.fetchTemplate(path, 'GET', body)).json();
+    return await this.fetchTemplate(path, 'GET', body);
   }
 
   async post<T>(path: string, body?: object | T) {
-    return await (await this.fetchTemplate(path, 'POST', body)).json();
+    return await this.fetchTemplate(path, 'POST', body);
   }
 
   async put<T>(path: string, body?: object | T) {
-    return await (await this.fetchTemplate(path, 'PUT', body)).json();
+    return await this.fetchTemplate(path, 'PUT', body);
   }
 }
