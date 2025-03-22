@@ -2,26 +2,20 @@
 
 import CustomFetch from "./custom_fetch";
 import { useState } from "react";
+import { SpanishWordDTO, WordDTO } from "@/models";
 
-export function useAPI() {
+export default function useSubmitAPI() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [response, setResponse] = useState<object>();
 
   const customFetch = new CustomFetch();
 
-  async function submit<T>(functionName: string, body?: T) {
+  async function putWord(word: WordDTO | SpanishWordDTO) {
     try {
       setIsLoading(true);
 
-      let result;
-      switch (functionName) {
-        case 'PUT_WORD':
-          result = await customFetch.put('putWord', body);
-          break;
-        default:
-          throw new Error('Function not found');
-      }
+      const result = await customFetch.put('putWord', word);
 
       setResponse(result);
     } catch (error) {
@@ -35,6 +29,6 @@ export function useAPI() {
     isLoading,
     error,
     response,
-    submit,
+    putWord,
   }
 }
