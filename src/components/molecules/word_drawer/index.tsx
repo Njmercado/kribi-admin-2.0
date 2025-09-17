@@ -1,13 +1,13 @@
 import { SUBMIT_ACTIONS, SubmitAction } from '@/contants';
 import { Drawer } from '../../atom'
 import { DrawerDirection } from '../../atom/drawer'
-import { SpanishWordDTO, WordDTO } from "@/models";
+import { WordDTO, WordType } from "@/models";
 
 export interface WordDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   data: WordDTO;
-  onSubmit?: (form: SpanishWordDTO, action: SubmitAction) => void;
+  onSubmit?: (form: WordDTO, action: SubmitAction) => void;
 }
 
 export default function WordDrawer({
@@ -26,17 +26,19 @@ export default function WordDrawer({
     const translations = formData.get('translations') as string;
     const definitions = formData.get('definitions') as string;
     const examples = formData.get('examples') as string;
+    const language = formData.get('language') as 'spanish' | 'palenque';
     if (onSubmit) {
       onSubmit(
         {
           _id: data._id as string,
-          palabra: word,
-          tipo: type,
-          traducciones: translations.split(','),
-          definicion: definitions.split(','),
-          ejemplos: examples.split(','),
+          word,
+          type: type as WordType,
+          translations: translations.split(','),
+          definitions: definitions.split(','),
+          examples: examples.split(','),
+          language,
         },
-        data._id == -1 ? SUBMIT_ACTIONS.ADD : SUBMIT_ACTIONS.UPDATE
+        data._id ? SUBMIT_ACTIONS.ADD : SUBMIT_ACTIONS.UPDATE
       );
     }
   }
@@ -52,11 +54,29 @@ export default function WordDrawer({
           <h2 className="text-2xl font-bold text-center">Add Word</h2>
           <form method="post" className="flex flex-col gap-2" onSubmit={handleOnSubmit}>
             <input type="text" name="word" placeholder="Word" className="rounded-md border-solid border-black border-2" defaultValue={data.word} />
-            <input type="text" name="type" placeholder="Type" className="rounded-md border-solid border-black border-2" defaultValue={data.type} />
+            <select name="language" defaultValue={data.language ?? 'palenque'}>
+              <option value="spanish">Espanol</option>
+              <option value="palenque">Palenque</option>
+            </select>
+            <select name="type" className="rounded-md border-solid border-black border-2" defaultValue={data.type}>
+              <option value="noun">sustantivo</option>
+              <option value="verb">verbo</option>
+              <option value="adjective">adjetivo</option>
+              <option value="adverb">adverbio</option>
+              <option value="preposition">preposición</option>
+              <option value="conjunction">conjunción</option>
+              <option value="interjection">interjección</option>
+              <option value="article">artículo</option>
+              <option value="other">otro</option>
+            </select>
             <input type="text" name="translations" placeholder="Translations" className="rounded-md border-solid border-black border-2" defaultValue={data.translations.join(',')} />
             <input type="text" name="definitions" placeholder="Definitions" className="rounded-md border-solid border-black border-2" defaultValue={data.definitions.join(',')} />
             <input type="text" name="examples" placeholder="Examples" className="rounded-md border-solid border-black border-2" defaultValue={data.examples.join(',')} />
-            <button formAction='submit' className="rounded-md bg-blue-400 p-2 text-white font-bold">Add Word</button>
+            <button formAction='submit' className="rounded-md bg-blue-400 p-2 text-white font-bold">
+              {
+                data._id ? 'Update Word' : 'Add Word'
+              }
+            </button>
           </form>
         </section>
       </article>

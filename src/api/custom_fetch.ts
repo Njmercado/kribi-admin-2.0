@@ -1,37 +1,57 @@
+import { FetchProps, RequestProps, FetchResponse } from "@/models";
+
 const API_TOKEN = process.env.NEXT_PUBLIC_API_TOKEN;
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const SERVER = process.env.NEXT_PUBLIC_API_URL;
 const HEADERS = new Headers();
-HEADERS.append("x-api-key", API_TOKEN || '');
 
 export default class CustomFetch {
-  constructor() {
-    if (!API_TOKEN || !API_URL) {
-      throw new Error('API_TOKEN or API_URL is not defined');
+
+  private prefix: string = '';
+
+  constructor(prefix?: string) {
+    if (!API_TOKEN || !SERVER) {
+      throw new Error('API_TOKEN or SERVER is not defined');
+    }
+    if (prefix) {
+      this.prefix = prefix;
     }
   }
 
-  private async fetchTemplate<T>(path: string, method: 'GET' | 'POST' | 'PUT', body?: object | T) {
-    return await (
-      await fetch(
-        `${API_URL}/${path}`,
-        {
-          headers: HEADERS,
-          method,
-          ...(body && { body: JSON.stringify(body) })
-        }
-      )
-    ).json()
+  private async requestTemplate<T>({
+    path, method, body, options
+  }: FetchProps<T>): Promise<FetchResponse<T>> {
+    const response = await fetch(
+      `${SERVER}${this.prefix}${path}`,
+      {
+        headers: HEADERS,
+        method,
+        ...(body && { body: JSON.stringify(body) }),
+        ...options
+      }
+    )
+
+    const data = await response.json() as T;
+
+    return {
+      data,
+      status: response.status,
+      statusText: response.statusText
+    }
   }
 
-  async get<T>(path: string, body?: object | T) {
-    return await this.fetchTemplate(path, 'GET', body);
+  async get<T>({ path, options }: RequestProps<T>) {
+    return await this.requestTemplate<T>({ path, method: 'GET', options });
   }
 
-  async post<T>(path: string, body?: object | T) {
-    return await this.fetchTemplate(path, 'POST', body);
+  async post<T>({ path, body, options }: RequestProps<T>) {
+    return await this.requestTemplate<T>({ path, method: 'POST', body, options });
   }
 
-  async put<T>(path: string, body?: object | T) {
-    return await this.fetchTemplate(path, 'PUT', body);
+  async put<T>({ path, body, options }: RequestProps<T>) {
+    return await this.requestTemplate<T>({ path: path ?? '/', method: 'PUT', body, options });
+  }
+
+  async del<T>({ path, body, options }: RequestProps<T>) {
+    return await this.requestTemplate({ path, method: 'DELETE', body, options });
   }
 }

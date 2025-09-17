@@ -1,5 +1,5 @@
-import IWord from "../interfaces/word.interface";
+import { IWord } from "../interfaces/word.interface";
 
-export default interface WordDTO extends IWord {
+export interface WordDTO extends IWord {
   _id: number | string | null;
 }

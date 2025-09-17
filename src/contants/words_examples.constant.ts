@@ -1,11 +1,11 @@
-import { WordDTO } from '@/models';
+import { WordDTO, WordType } from '@/models';
 
 const WORD_EXAMPLES: {
   words: Array<WordDTO>
 } = {
   "words": [
     {
-      "id": 1,
+      "_id": 1,
       "word": "Example",
       "definitions": [
         "This is the first example definition.",
@@ -16,10 +16,10 @@ const WORD_EXAMPLES: {
         "This is the second example of how the word is used."
       ],
       "translations": ["Ejemplo", "Exemplo"],
-      "type": "noun"
+      "type": WordType.NOUN
     },
     {
-      "id": 2,
+      "_id": 2,
       "word": "Sample",
       "definitions": [
         "This is the first sample definition.",
@@ -30,10 +30,10 @@ const WORD_EXAMPLES: {
         "This is the second sample of how the word is used."
       ],
       "translations": ["Muestra", "Amostra"],
-      "type": "noun"
+      "type": WordType.NOUN
     },
     {
-      "id": 3,
+      "_id": 3,
       "word": "Test",
       "definitions": [
         "This is the first test definition.",
@@ -44,10 +44,10 @@ const WORD_EXAMPLES: {
         "This is the second test of how the word is used."
       ],
       "translations": ["Prueba", "Teste"],
-      "type": "noun"
+      "type": WordType.NOUN
     },
     {
-      "id": 4,
+      "_id": 4,
       "word": "Demo",
       "definitions": [
         "This is the first demo definition.",
@@ -58,10 +58,10 @@ const WORD_EXAMPLES: {
         "This is the second demo of how the word is used."
       ],
       "translations": ["Demostración", "Demonstração"],
-      "type": "noun"
+      "type": WordType.NOUN
     },
     {
-      "id": 5,
+      "_id": 5,
       "word": "Prototype",
       "definitions": [
         "This is the first prototype definition.",
@@ -72,10 +72,10 @@ const WORD_EXAMPLES: {
         "This is the second prototype of how the word is used."
       ],
       "translations": ["Prototipo", "Protótipo"],
-      "type": "noun"
+      "type": WordType.NOUN
     },
     {
-      "id": 6,
+      "_id": 6,
       "word": "Mock",
       "definitions": [
         "This is the first mock definition.",
@@ -86,10 +86,10 @@ const WORD_EXAMPLES: {
         "This is the second mock of how the word is used."
       ],
       "translations": ["Simulación", "Simulação"],
-      "type": "noun"
+      "type": WordType.NOUN
     },
     {
-      "id": 7,
+      "_id": 7,
       "word": "Template",
       "definitions": [
         "This is the first template definition.",
@@ -100,10 +100,10 @@ const WORD_EXAMPLES: {
         "This is the second template of how the word is used."
       ],
       "translations": ["Plantilla", "Modelo"],
-      "type": "noun"
+      "type": WordType.NOUN
     },
     {
-      "id": 8,
+      "_id": 8,
       "word": "Blueprint",
       "definitions": [
         "This is the first blueprint definition.",
@@ -114,10 +114,10 @@ const WORD_EXAMPLES: {
         "This is the second blueprint of how the word is used."
       ],
       "translations": ["Plano", "Planta"],
-      "type": "noun"
+      "type": WordType.NOUN
     },
     {
-      "id": 9,
+      "_id": 9,
       "word": "Guide",
       "definitions": [
         "This is the first guide definition.",
@@ -128,10 +128,10 @@ const WORD_EXAMPLES: {
         "This is the second guide of how the word is used."
       ],
       "translations": ["Guía", "Guia"],
-      "type": "noun"
+      "type": WordType.NOUN
     },
     {
-      "id": 10,
+      "_id": 10,
       "word": "Manual",
       "definitions": [
         "This is the first manual definition.",
@@ -142,7 +142,7 @@ const WORD_EXAMPLES: {
         "This is the second manual of how the word is used."
       ],
       "translations": ["Manual", "Manual"],
-      "type": "noun"
+      "type": WordType.NOUN
     }
   ]
 }

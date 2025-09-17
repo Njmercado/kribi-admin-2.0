@@ -1,7 +1,7 @@
 import useSubmitAPI from "./use_submit_api.hook";
-import useGetAPI from "./use_get_api.hook";
+export * from "./wordAPI";
+export * from "./useRequest"
 
 export {
   useSubmitAPI,
-  useGetAPI
 }

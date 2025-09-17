@@ -2,20 +2,21 @@
 
 import CustomFetch from "./custom_fetch";
 import { useState } from "react";
-import { SpanishWordDTO, WordDTO } from "@/models";
+import { WordDTO } from "@/models";
+import { PREFIXES } from "@/contants";
 
 export default function useSubmitAPI() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [response, setResponse] = useState<object>();
 
-  const customFetch = new CustomFetch();
+  const customFetch = new CustomFetch(PREFIXES.WORD);
 
-  async function putWord(word: WordDTO | SpanishWordDTO) {
+  async function putWord(word: WordDTO) {
     try {
       setIsLoading(true);
 
-      const result = await customFetch.put('putWord', word);
+      const result = await customFetch.put({ body: word });
 
       setResponse(result);
     } catch (error) {

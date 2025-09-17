@@ -2,34 +2,27 @@
 
 import { IWord } from "@/models";
 
-export interface WordCardProps extends IWord {
+export interface WordCardProps {
   onDelete: () => void;
   onEdit: () => void;
-  definitions: string[];
-  examples: string[];
-  translations: string[];
-  type: string;
+  word: IWord;
 }
 
 export default function WordCard({
   word,
-  definitions,
-  examples,
-  translations,
-  type,
   onDelete,
   onEdit,
 }: WordCardProps) {
   return (
     <div className="max-w-sm mx-auto my-4 p-4 shadow-lg rounded-lg bg-white">
       <div className="mb-4">
-        <h2 className="text-xl font-bold">{word}</h2>
-        <p className="text-sm text-gray-600">{type}</p>
+        <h2 className="text-xl font-bold">{word.word}</h2>
+        <p className="text-sm text-gray-600">{word.type}</p>
         {/* TRANSLATIONS */}
         <div className="mt-2">
           <h3 className="text-lg font-semibold">Translations:</h3>
           <ul className="list-disc list-inside text-gray-700">
-            {translations.map((translation, index) => (
+            {word.translations.map((translation, index) => (
               <li key={index}>{translation}</li>
             ))}
           </ul>
@@ -38,7 +31,7 @@ export default function WordCard({
         <div className="mt-2">
           <h3 className="text-lg font-semibold">Definitions:</h3>
           <ul className="list-disc list-inside text-gray-700">
-            {definitions.map((definition, index) => (
+            {word.definitions.map((definition, index) => (
               <li key={index}>{definition}</li>
             ))}
           </ul>
@@ -47,7 +40,7 @@ export default function WordCard({
         <div className="mt-2">
           <h3 className="text-lg font-semibold">Examples:</h3>
           <ul className="list-disc list-inside text-gray-500 italic">
-            {examples.map((example, index) => (
+            {word.examples.map((example, index) => (
               <li key={index}>{example}</li>
             ))}
           </ul>

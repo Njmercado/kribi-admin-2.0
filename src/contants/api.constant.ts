@@ -3,9 +3,14 @@ export const API_ACTIONS = {
   PUT_WORD: 'PUT_WORD',
 }
 
+export const PREFIXES = {
+  WORD: '/word',
+}
+
 export const API_ENDPOINTS = {
-  GET_WORD: 'getListOfWordsByWord',
-  PUT_WORD: 'putWord',
+  WORD: {
+    SEARCH: '/search/',
+  }
 };
 
 export const SUBMIT_ACTIONS = {

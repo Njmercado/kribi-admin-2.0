@@ -1,12 +1,10 @@
-import { WordDTO } from "@/models";
+import { WordDTO, WordType } from "@/models";
 
-const WORD_DEFAULT_VALUES: WordDTO = {
+export const WORD_DEFAULT_VALUES: WordDTO = {
   _id: -1,
   word: 'default word',
-  type: 'default type',
+  type: WordType.NONE,
   translations: ['default translation'],
   definitions: ['default definition'],
   examples: ['default example'],
 }
-
-export default WORD_DEFAULT_VALUES;
