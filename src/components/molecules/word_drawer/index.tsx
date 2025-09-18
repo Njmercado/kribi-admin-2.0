@@ -1,20 +1,24 @@
-import { SUBMIT_ACTIONS, SubmitAction } from '@/contants';
-import { Drawer } from '../../atom'
+import { Drawer } from '@/components/atom'
 import { DrawerDirection } from '../../atom/drawer'
 import { WordDTO, WordType } from "@/models";
+
+export type ActionType = 'ADD' | 'UPDATE';
 
 export interface WordDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   data: WordDTO;
-  onSubmit?: (form: WordDTO, action: SubmitAction) => void;
+  onSubmit?: (form: WordDTO) => void;
+  action: ActionType;
+  direction?: DrawerDirection;
 }
 
 export default function WordDrawer({
   isOpen,
   onClose,
   data,
-  onSubmit
+  onSubmit,
+  direction
 }: WordDrawerProps) {
 
   function handleOnSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -27,25 +31,22 @@ export default function WordDrawer({
     const definitions = formData.get('definitions') as string;
     const examples = formData.get('examples') as string;
     const language = formData.get('language') as 'spanish' | 'palenque';
-    if (onSubmit) {
-      onSubmit(
-        {
-          _id: data._id as string,
-          word,
-          type: type as WordType,
-          translations: translations.split(','),
-          definitions: definitions.split(','),
-          examples: examples.split(','),
-          language,
-        },
-        data._id ? SUBMIT_ACTIONS.ADD : SUBMIT_ACTIONS.UPDATE
-      );
-    }
+    onSubmit?.(
+      {
+        ...data,
+        word,
+        type: type as WordType,
+        translations: translations.split(','),
+        definitions: definitions.split(','),
+        examples: examples.split(','),
+        language,
+      },
+    );
   }
 
   return (
     <Drawer
-      direction={DrawerDirection.BOTTOM_TO_TOP}
+      direction={direction ?? DrawerDirection.BOTTOM_TO_TOP}
       isOpen={isOpen}
       onClose={onClose}
     >
@@ -72,11 +73,7 @@ export default function WordDrawer({
             <input type="text" name="translations" placeholder="Translations" className="rounded-md border-solid border-black border-2" defaultValue={data.translations.join(',')} />
             <input type="text" name="definitions" placeholder="Definitions" className="rounded-md border-solid border-black border-2" defaultValue={data.definitions.join(',')} />
             <input type="text" name="examples" placeholder="Examples" className="rounded-md border-solid border-black border-2" defaultValue={data.examples.join(',')} />
-            <button formAction='submit' className="rounded-md bg-blue-400 p-2 text-white font-bold">
-              {
-                data._id ? 'Update Word' : 'Add Word'
-              }
-            </button>
+            <button formAction='submit' className="rounded-md bg-blue-400 p-2 text-white font-bold">submit</button>
           </form>
         </section>
       </article>

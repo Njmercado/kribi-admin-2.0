@@ -17,5 +17,3 @@ export const SUBMIT_ACTIONS = {
   ADD: 'ADD',
   UPDATE: 'UPDATE',
 }
-
-export type SubmitAction = typeof SUBMIT_ACTIONS[keyof typeof SUBMIT_ACTIONS];

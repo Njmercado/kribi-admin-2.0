@@ -1,11 +1,13 @@
 'use client';
 
-import { IWord } from "@/models";
+import { WordDTO } from "@/models";
+import { useState } from "react";
+import { WordExamples, WordTitle, WordTranslations, WordType, WordDefinitions } from "@/components/atom";
 
 export interface WordCardProps {
   onDelete: () => void;
-  onEdit: () => void;
-  word: IWord;
+  onEdit: (updatedWord: WordDTO) => void;
+  word: WordDTO;
 }
 
 export default function WordCard({
@@ -13,53 +15,85 @@ export default function WordCard({
   onDelete,
   onEdit,
 }: WordCardProps) {
+
+  const [localWord, setLocalWord] = useState<WordDTO>(word);
+  const [isEditing, setIsEditing] = useState(false);
+
+  function handleSave() {
+    onEdit(localWord);
+    setIsEditing(false);
+  }
+
+  function handleOnCancel() {
+    setLocalWord(word); // Revert changes
+    setIsEditing(false);
+  }
+
+  // TODO: Organize this card better because it's getting too big and loosing lot of space making the home page very 
+  // weird and deorganized with too much space between cards
   return (
     <div className="max-w-sm mx-auto my-4 p-4 shadow-lg rounded-lg bg-white">
       <div className="mb-4">
-        <h2 className="text-xl font-bold">{word.word}</h2>
-        <p className="text-sm text-gray-600">{word.type}</p>
+        <WordTitle
+          word={localWord.word}
+          readOnly={!isEditing}
+          onChange={newWord => setLocalWord({ ...localWord, word: newWord })}
+        />
+        <WordType type={localWord.type} readOnly={!isEditing} onChange={newType => setLocalWord({ ...localWord, type: newType })} />
         {/* TRANSLATIONS */}
-        <div className="mt-2">
-          <h3 className="text-lg font-semibold">Translations:</h3>
-          <ul className="list-disc list-inside text-gray-700">
-            {word.translations.map((translation, index) => (
-              <li key={index}>{translation}</li>
-            ))}
-          </ul>
-        </div>
+        <WordTranslations
+          translations={localWord.translations}
+          readOnly={!isEditing}
+          onChange={newTranslations => setLocalWord({ ...localWord, translations: newTranslations })}
+        />
         {/* DEFINITIONS */}
-        <div className="mt-2">
-          <h3 className="text-lg font-semibold">Definitions:</h3>
-          <ul className="list-disc list-inside text-gray-700">
-            {word.definitions.map((definition, index) => (
-              <li key={index}>{definition}</li>
-            ))}
-          </ul>
-        </div>
+        <WordDefinitions
+          definitions={localWord.definitions}
+          readOnly={!isEditing}
+          onChange={newDefinitions => setLocalWord({ ...localWord, definitions: newDefinitions })}
+        />
         {/* EXAMPLES */}
-        <div className="mt-2">
-          <h3 className="text-lg font-semibold">Examples:</h3>
-          <ul className="list-disc list-inside text-gray-500 italic">
-            {word.examples.map((example, index) => (
-              <li key={index}>{example}</li>
-            ))}
-          </ul>
-        </div>
+        <WordExamples
+          examples={localWord.examples}
+          readOnly={!isEditing}
+          onChange={newExamples => setLocalWord({ ...localWord, examples: newExamples })}
+        />
       </div>
       {/* Action buttons */}
       <div className="flex justify-end space-x-2">
-        <button
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          onClick={onEdit}
-        >
-          Edit
-        </button>
-        <button
-          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-          onClick={onDelete}
-        >
-          Delete
-        </button>
+
+        {
+          isEditing ? (
+            <>
+              <button
+                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                onClick={() => handleSave()}
+              >
+                Save
+              </button>
+              <button
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                onClick={handleOnCancel}
+              >
+                Cancel
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                onClick={() => setIsEditing(true)}
+              >
+                Edit
+              </button>
+              <button
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                onClick={onDelete}
+              >
+                Delete
+              </button>
+            </>
+          )}
       </div>
     </div>
   );

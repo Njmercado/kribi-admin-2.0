@@ -12,7 +12,7 @@ export function search(word: string) {
 }
 
 export function update(word: WordDTO) {
-  return customFetch.put<WordDTO>({ body: word });
+  return customFetch.put<WordDTO>({ path: `/${word.id}`, body: word });
 }
 
 export function erase(id: string) {

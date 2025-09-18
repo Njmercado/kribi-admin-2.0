@@ -3,6 +3,7 @@ import { FetchProps, RequestProps, FetchResponse } from "@/models";
 const API_TOKEN = process.env.NEXT_PUBLIC_API_TOKEN;
 const SERVER = process.env.NEXT_PUBLIC_API_URL;
 const HEADERS = new Headers();
+HEADERS.append('Content-Type', 'application/json');
 
 export default class CustomFetch {
 
@@ -20,14 +21,18 @@ export default class CustomFetch {
   private async requestTemplate<T>({
     path, method, body, options
   }: FetchProps<T>): Promise<FetchResponse<T>> {
+
+    const REQUEST_OPTIONS = {
+      headers: HEADERS,
+      method,
+      ...(body && { body: JSON.stringify(body) }),
+      ...options
+
+    }
+
     const response = await fetch(
       `${SERVER}${this.prefix}${path}`,
-      {
-        headers: HEADERS,
-        method,
-        ...(body && { body: JSON.stringify(body) }),
-        ...options
-      }
+      REQUEST_OPTIONS
     )
 
     const data = await response.json() as T;

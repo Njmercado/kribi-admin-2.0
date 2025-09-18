@@ -21,7 +21,7 @@ export interface DrawerProps {
   isOpen: boolean;
 }
 
-export default function Drawer({
+export function Drawer({
   direction,
   children,
   onClose,
