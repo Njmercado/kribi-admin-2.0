@@ -1,7 +1,7 @@
 'use client'
 
 import CustomFetch from "./custom_fetch";
-import { WordDTO } from "@/models";
+import { WordDTO, IWord } from "@/models";
 import { PREFIXES, API_ENDPOINTS } from "@/contants";
 
 const customFetch = new CustomFetch(PREFIXES.WORD);
@@ -17,4 +17,8 @@ export function update(word: WordDTO) {
 
 export function erase(id: string) {
   return customFetch.del<{ id: string }>({ path: `/${id}` });
+}
+
+export function create(word: IWord) {
+  return customFetch.post<WordDTO>({ path: '/', body: word });
 }

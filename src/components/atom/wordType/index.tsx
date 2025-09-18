@@ -1,7 +1,7 @@
 import { WordType as WordTypeEnum } from '@/models';
 
 export interface WordTypeProps {
-  type: string;
+  type?: string;
   readOnly?: boolean;
   onChange?: (newType: WordTypeEnum ) => void;
 }

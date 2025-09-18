@@ -1,25 +1,20 @@
 'use client'
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { WordCard } from "@/components/molecules";
-import { WordDTO } from "@/models";
-import { WORD_DEFAULT_VALUES, WORD_DEFAULT_VALUES_ON_ADD, SUBMIT_ACTIONS, SubmitAction } from "@/contants";
-import { WordDrawer } from "@/components/molecules";
+import { WordDTO, IWord } from "@/models";
+import { AddWordDrawer } from "@/components/molecules";
 import { useCustomRouter } from "@/utils";
-import { useRequest, search, update } from "@/api";
+import { useRequest, search, update, create } from "@/api";
+import { DrawerDirection } from "@/components/atom/drawer";
 
 export default function Home() {
 
   const [searchInput, setSearchInput] = useState('');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [wordData, setWordData] = useState<WordDTO>(WORD_DEFAULT_VALUES);
   const { goLogin } = useCustomRouter();
-  const {
-    response: putWordResponse,
-    isLoading: putWordIsLoading,
-    request: updateWordRequest,
-    error: putWordError
-  } = useRequest<WordDTO>(update);
+  const { request: updateWordRequest } = useRequest<WordDTO>(update);
+  const { request: createWordRequest } = useRequest<WordDTO>(create);
   const { response: getWordsResponse, request: searchWordRequest, isError: isSearchError } = useRequest<Array<WordDTO>>(search);
 
   function handleOnDelete(wordId: number | string) {
@@ -30,7 +25,7 @@ export default function Home() {
   }
 
   function handleOnEdit(word: WordDTO) {
-    setWordData(word);
+    updateWordRequest(word);
   }
 
   async function handleOnSearch() {
@@ -38,31 +33,13 @@ export default function Home() {
   }
 
   function handleAddWord() {
-    setWordData(WORD_DEFAULT_VALUES_ON_ADD);
-  }
-
-  function handleCloseDrawer() {
-    setWordData(WORD_DEFAULT_VALUES);
-    setIsDrawerOpen(false);
-  };
-
-  function handleOnSubmit(form: WordDTO, action: SubmitAction) {
-    if (action === SUBMIT_ACTIONS.ADD) { form._id = '-1' }
-    updateWordRequest(form);
-  }
-
-  // Close the drawer when the word is added/updated
-  // TODO: Show error message when the word is not added/updated
-  useEffect(() => {
-    if (putWordResponse && putWordIsLoading === false) {
-      handleCloseDrawer();
-    }
-  }, [putWordIsLoading, putWordError, putWordResponse]);
-
-  useEffect(() => {
-    if (wordData.word === WORD_DEFAULT_VALUES.word) return;
     setIsDrawerOpen(true);
-  }, [wordData]);
+  }
+
+  function handleOnSubmit(form: IWord) {
+    createWordRequest(form);
+    setIsDrawerOpen(false);
+  }
 
   return (
     <main>
@@ -90,18 +67,18 @@ export default function Home() {
             <WordCard
               key={index}
               word={word}
-              onDelete={() => handleOnDelete(word._id as string)}
-              onEdit={() => handleOnEdit(word)}
+              onDelete={() => handleOnDelete(word.id as string)}
+              onEdit={(updateWord: WordDTO) => handleOnEdit(updateWord)}
             />
           ))
         }
       </article>
 
-      <WordDrawer
+      <AddWordDrawer
         isOpen={isDrawerOpen}
-        onClose={handleCloseDrawer}
-        data={wordData}
-        onSubmit={(form: WordDTO, action: SubmitAction) => handleOnSubmit(form, action)}
+        onClose={() => setIsDrawerOpen(false)}
+        direction={DrawerDirection.RIGHT_TO_LEFT}
+        onSubmit={(form: IWord) => handleOnSubmit(form)}
       />
     </main>
   )

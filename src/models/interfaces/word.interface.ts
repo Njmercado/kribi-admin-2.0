@@ -1,13 +1,13 @@
 export enum WordType {
-  NOUN = 'noun',
-  VERB = 'verb',
-  ADJECTIVE = 'adjective',
-  ADVERB = 'adverb',
-  PREPOSITION = 'preposition',
-  CONJUNCTION = 'conjunction',
-  INTERJECTION = 'interjection',
-  ARTICLE = 'article',
-  NONE = 'none',
+  NOUN = 'NOUN',
+  VERB = 'VERB',
+  ADJECTIVE = 'ADJECTIVE',
+  ADVERB = 'ADVERB',
+  PREPOSITION = 'PREPOSITION',
+  CONJUNCTION = 'CONJUNCTION',
+  INTERJECTION = 'INTERJECTION',
+  ARTICLE = 'ARTICLE',
+  NONE = 'NONE',
 }
 
 /**

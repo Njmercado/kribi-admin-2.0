@@ -1,5 +1,5 @@
 export interface WordDefinitionsProps {
-  definitions: string[];
+  definitions?: string[];
   readOnly: boolean;
   onChange?: (newDefinitions: string[]) => void;
 }
@@ -16,7 +16,7 @@ export function WordDefinitions({ definitions, readOnly, onChange }: WordDefinit
     <div className="mt-2">
       <h3 className="text-lg font-semibold">Definitions:</h3>
       <ul className="list-disc list-inside text-gray-700">
-        {definitions.map((definition, index) => (
+        {definitions?.map((definition, index) => (
           <li key={index}>{definition}</li>
         ))}
       </ul>
@@ -27,7 +27,7 @@ export function WordDefinitions({ definitions, readOnly, onChange }: WordDefinit
       <textarea
         className="w-full p-2 border border-gray-300 rounded mt-1"
         rows={4}
-        value={definitions.join("\n")}
+        value={definitions?.join("\n")}
         onChange={e => handleOnChange(e.target.value)}
         placeholder="Enter definitions, one per line"
       />

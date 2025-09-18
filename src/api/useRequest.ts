@@ -17,7 +17,7 @@ export function useRequest<T>(functionToCall: (...args: any[]) => Promise<FetchR
       if ( ![200, 201, 202].includes(result.status) ) {
         throw new Error(result.statusText || 'Error');
       } 
-      setResponse(result.data);
+      setResponse(() => result.data);
     } catch (error) {
       setError(JSON.stringify(error));
       setIsError(true);

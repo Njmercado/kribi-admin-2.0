@@ -10,7 +10,7 @@ export interface WordCardProps {
   word: WordDTO;
 }
 
-export default function WordCard({
+export function WordCard({
   word,
   onDelete,
   onEdit,

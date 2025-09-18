@@ -1,7 +1,2 @@
-import WordCard from './word';
-import WordDrawer from './word_drawer';
-
-export {
-  WordCard,
-  WordDrawer,
-}
+export { WordCard } from './word';
+export { AddWordDrawer } from './word_drawer';
