@@ -5,7 +5,7 @@ const WORD_EXAMPLES: {
 } = {
   "words": [
     {
-      "_id": 1,
+      "id": 1,
       "word": "Example",
       "definitions": [
         "This is the first example definition.",
@@ -19,7 +19,7 @@ const WORD_EXAMPLES: {
       "type": WordType.NOUN
     },
     {
-      "_id": 2,
+      "id": 2,
       "word": "Sample",
       "definitions": [
         "This is the first sample definition.",
@@ -33,7 +33,7 @@ const WORD_EXAMPLES: {
       "type": WordType.NOUN
     },
     {
-      "_id": 3,
+      "id": 3,
       "word": "Test",
       "definitions": [
         "This is the first test definition.",
@@ -47,7 +47,7 @@ const WORD_EXAMPLES: {
       "type": WordType.NOUN
     },
     {
-      "_id": 4,
+      "id": 4,
       "word": "Demo",
       "definitions": [
         "This is the first demo definition.",
@@ -61,7 +61,7 @@ const WORD_EXAMPLES: {
       "type": WordType.NOUN
     },
     {
-      "_id": 5,
+      "id": 5,
       "word": "Prototype",
       "definitions": [
         "This is the first prototype definition.",
@@ -75,7 +75,7 @@ const WORD_EXAMPLES: {
       "type": WordType.NOUN
     },
     {
-      "_id": 6,
+      "id": 6,
       "word": "Mock",
       "definitions": [
         "This is the first mock definition.",
@@ -89,7 +89,7 @@ const WORD_EXAMPLES: {
       "type": WordType.NOUN
     },
     {
-      "_id": 7,
+      "id": 7,
       "word": "Template",
       "definitions": [
         "This is the first template definition.",
@@ -103,7 +103,7 @@ const WORD_EXAMPLES: {
       "type": WordType.NOUN
     },
     {
-      "_id": 8,
+      "id": 8,
       "word": "Blueprint",
       "definitions": [
         "This is the first blueprint definition.",
@@ -117,7 +117,7 @@ const WORD_EXAMPLES: {
       "type": WordType.NOUN
     },
     {
-      "_id": 9,
+      "id": 9,
       "word": "Guide",
       "definitions": [
         "This is the first guide definition.",
@@ -131,7 +131,7 @@ const WORD_EXAMPLES: {
       "type": WordType.NOUN
     },
     {
-      "_id": 10,
+      "id": 10,
       "word": "Manual",
       "definitions": [
         "This is the first manual definition.",
