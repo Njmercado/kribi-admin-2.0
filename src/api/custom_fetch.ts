@@ -21,6 +21,9 @@ export default class CustomFetch {
   }: FetchProps): Promise<FetchResponse<T>> {
 
     const HEADERS = new Headers();
+    if ( options?.contentType !== 'form' ) {
+      HEADERS.append('Content-Type', 'application/json');
+    }
 
     const REQUEST_OPTIONS = {
       headers: HEADERS,
