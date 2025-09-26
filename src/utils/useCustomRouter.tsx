@@ -8,6 +8,6 @@ export default function useCustomRouter(link: string = '/') {
   return {
     goTo: () => router.push(link),
     goLogin: () => router.push('/'),
-    goHome: () => router.push('/home'),
+    goHome: () => router.push('/dashboard'),
   }
 }

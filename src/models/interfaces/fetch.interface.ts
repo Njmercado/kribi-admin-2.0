@@ -1,10 +1,15 @@
-export interface RequestProps<T> {
-  path?: string;
-  body?: object | T;
-  options?: object;
+export interface OptionsRequest {
+  contentType: 'json' | 'form';
 }
 
-export interface FetchProps<T> extends RequestProps<T> {
+export interface RequestProps {
+  path?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  body?: BodyInit | string | any;
+  options?: OptionsRequest;
+}
+
+export interface FetchProps extends RequestProps {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
 }
 

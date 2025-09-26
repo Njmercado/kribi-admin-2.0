@@ -4,23 +4,22 @@ import { useState } from "react"
 import { WordCard } from "@/components/molecules";
 import { WordDTO, IWord } from "@/models";
 import { AddWordDrawer } from "@/components/molecules";
-import { useCustomRouter } from "@/utils";
-import { useRequest, search, update, create } from "@/api";
+import { useRequest, search, update, create, erase } from "@/api";
 import { DrawerDirection } from "@/components/atom/drawer";
 
 export default function Home() {
 
   const [searchInput, setSearchInput] = useState('');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const { goLogin } = useCustomRouter();
   const { request: updateWordRequest } = useRequest<WordDTO>(update);
   const { request: createWordRequest } = useRequest<WordDTO>(create);
+  const { request: eraseWordRequest } = useRequest(erase);
   const { response: getWordsResponse, request: searchWordRequest, isError: isSearchError } = useRequest<Array<WordDTO>>(search);
 
   function handleOnDelete(wordId: number | string) {
     const response = confirm('Are you sure you want to delete this word?');
     if (response) {
-      console.log(`Deleting word with id: ${wordId}`);
+      eraseWordRequest(wordId.toString());
     }
   }
 
@@ -44,10 +43,6 @@ export default function Home() {
   return (
     <main>
       <article className="flex flex-col">
-        <section className="flex flex-row justify-between">
-          <h1 className="text-center text-2xl">Hola user</h1>
-          <button onClick={goLogin} className="bg-red-500 rounded-md p-2 text-white font-bold">salir</button>
-        </section>
         <section className="flex max-sm:flex-col sm:flex-row items-center justify-center gap-2">
           <input
             type="text"
