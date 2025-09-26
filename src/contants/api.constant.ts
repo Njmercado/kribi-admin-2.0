@@ -5,6 +5,7 @@ export const API_ACTIONS = {
 
 export const PREFIXES = {
   WORD: '/word',
+  AUTH: '/auth',
 }
 
 export const API_ENDPOINTS = {

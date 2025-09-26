@@ -2,8 +2,6 @@ import { FetchProps, RequestProps, FetchResponse } from "@/models";
 
 const API_TOKEN = process.env.NEXT_PUBLIC_API_TOKEN;
 const SERVER = process.env.NEXT_PUBLIC_API_URL;
-const HEADERS = new Headers();
-HEADERS.append('Content-Type', 'application/json');
 
 export default class CustomFetch {
 
@@ -20,14 +18,15 @@ export default class CustomFetch {
 
   private async requestTemplate<T>({
     path, method, body, options
-  }: FetchProps<T>): Promise<FetchResponse<T>> {
+  }: FetchProps): Promise<FetchResponse<T>> {
+
+    const HEADERS = new Headers();
 
     const REQUEST_OPTIONS = {
       headers: HEADERS,
       method,
-      ...(body && { body: JSON.stringify(body) }),
-      ...options
-
+      body: options?.contentType === 'form' ? body : JSON.stringify(body),
+      credentials: 'include' as RequestCredentials
     }
 
     const response = await fetch(
@@ -35,7 +34,7 @@ export default class CustomFetch {
       REQUEST_OPTIONS
     )
 
-    const data = await response.json() as T;
+    const data = await response.json();
 
     return {
       data,
@@ -44,19 +43,19 @@ export default class CustomFetch {
     }
   }
 
-  async get<T>({ path, options }: RequestProps<T>) {
+  async get<T>({ path, options }: RequestProps) {
     return await this.requestTemplate<T>({ path, method: 'GET', options });
   }
 
-  async post<T>({ path, body, options }: RequestProps<T>) {
+  async post<T>({ path, body, options }: RequestProps) {
     return await this.requestTemplate<T>({ path, method: 'POST', body, options });
   }
 
-  async put<T>({ path, body, options }: RequestProps<T>) {
+  async put<T>({ path, body, options }: RequestProps) {
     return await this.requestTemplate<T>({ path: path ?? '/', method: 'PUT', body, options });
   }
 
-  async del<T>({ path, body, options }: RequestProps<T>) {
-    return await this.requestTemplate({ path, method: 'DELETE', body, options });
+  async del<T>({ path, body, options }: RequestProps) {
+    return await this.requestTemplate<T>({ path, method: 'DELETE', body, options });
   }
 }

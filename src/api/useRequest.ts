@@ -14,7 +14,11 @@ export function useRequest<T>(functionToCall: (...args: any[]) => Promise<FetchR
     try {
       setIsError(false);
       const result = await functionToCall(...params);
-      if ( ![200, 201, 202].includes(result.status) ) {
+
+      // TODO: Standardize error handling in the API using constants instead of hardcoding status codes
+      if ( ![200, 201, 202, 204].includes(result.status) ) {
+        // TODO: Design a better error handling mechanism, maybe a toast notification system
+        alert(result.statusText || 'Error');
         throw new Error(result.statusText || 'Error');
       } 
       setResponse(() => result.data);

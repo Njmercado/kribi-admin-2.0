@@ -16,7 +16,7 @@ export function update(word: WordDTO) {
 }
 
 export function erase(id: string) {
-  return customFetch.del<{ id: string }>({ path: `/${id}` });
+  return customFetch.del({ path: `/${id}` });
 }
 
 export function create(word: IWord) {
