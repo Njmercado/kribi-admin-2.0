@@ -1,2 +1,2 @@
 export { WordCard } from './word';
-export { AddWordDrawer } from './word_drawer';
+export { AddWordDrawer } from './addWordDrawer';

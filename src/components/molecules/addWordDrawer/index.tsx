@@ -58,10 +58,6 @@ export function AddWordDrawer({
         </section>
         <section className="flex flex-col gap-2">
           <WordTitle readOnly={false} onChange={(newWord) => setWord({ ...word, word: newWord })} />
-          <select name="language" defaultValue={'palenque'}>
-            <option value="spanish">Espanol</option>
-            <option value="palenque">Palenque</option>
-          </select>
           <WordType readOnly={false} onChange={(chosenType: WordTypeEnum) => setWord({ ...word, type: chosenType })} />
           <WordTranslations readOnly={false} onChange={(newTranslations) => setWord({ ...word, translations: newTranslations })} />
           <WordDefinitions readOnly={false} onChange={(newDefinitions) => setWord({ ...word, definitions: newDefinitions })} />
