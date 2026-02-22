@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from "react"
-import { WordCard } from "@/components/molecules";
+import { WordCard } from "@/components/molecule";
 import { WordDTO, IWord } from "@/models";
-import { AddWordDrawer } from "@/components/molecules";
+import { AddWordDrawer } from "@/components/molecule";
 import { useRequest, search, update, create, erase } from "@/api";
 import { DrawerDirection } from "@/components/atom/drawer";
 

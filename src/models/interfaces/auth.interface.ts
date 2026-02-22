@@ -4,6 +4,11 @@ export interface Token {
 }
 
 export interface AuthResponse {
-  full_name: string;
+  id: number;
+  email: string;
   username: string;
+  role: string;
+  entitlements: string[];
+  is_active: boolean;
+  full_name: string;
 }

@@ -16,12 +16,17 @@ export default class CustomFetch {
     }
   }
 
+  /**
+   * Request template for all requests
+   * @param {FetchProps} props - The request properties
+   * @returns {Promise<FetchResponse<T>>} - The response from the server
+   */
   private async requestTemplate<T>({
     path, method, body, options
   }: FetchProps): Promise<FetchResponse<T>> {
 
     const HEADERS = new Headers();
-    if ( options?.contentType !== 'form' ) {
+    if (options?.contentType !== 'form') {
       HEADERS.append('Content-Type', 'application/json');
     }
 
@@ -46,18 +51,38 @@ export default class CustomFetch {
     }
   }
 
+  /**
+   * GET request
+   * @param {RequestProps} props - The request properties
+   * @returns {Promise<FetchResponse<T>>} - The response from the server
+   */
   async get<T>({ path, options }: RequestProps) {
     return await this.requestTemplate<T>({ path, method: 'GET', options });
   }
 
+  /**
+   * POST request
+   * @param {RequestProps} props - The request properties
+   * @returns {Promise<FetchResponse<T>>} - The response from the server
+   */
   async post<T>({ path, body, options }: RequestProps) {
     return await this.requestTemplate<T>({ path, method: 'POST', body, options });
   }
 
+  /**
+   * PUT request
+   * @param {RequestProps} props - The request properties
+   * @returns {Promise<FetchResponse<T>>} - The response from the server
+   */
   async put<T>({ path, body, options }: RequestProps) {
     return await this.requestTemplate<T>({ path: path ?? '/', method: 'PUT', body, options });
   }
 
+  /**
+   * DELETE request
+   * @param {RequestProps} props - The request properties
+   * @returns {Promise<FetchResponse<T>>} - The response from the server
+   */
   async del<T>({ path, body, options }: RequestProps) {
     return await this.requestTemplate<T>({ path, method: 'DELETE', body, options });
   }
