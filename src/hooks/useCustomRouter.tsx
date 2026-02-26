@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-export default function useCustomRouter(link: string = '/') {
+export function useCustomRouter(link: string = '/') {
   const router = useRouter();
 
   return {

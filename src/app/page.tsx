@@ -1,6 +1,6 @@
 'use client';
 
-import { useCustomRouter } from "@/utils";
+import { useCustomRouter } from "@/hooks";
 import { useRequest, logIn, checkAuth } from "@/api";
 import { useEffect } from "react";
 import { useAppDispatch } from "@/libs/store";

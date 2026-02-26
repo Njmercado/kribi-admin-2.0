@@ -1,0 +1,9 @@
+export const ROLES = {
+  WORD_ADMIN: 'WORD_ADMIN',
+  ARTICLE_ADMIN: 'ARTICLE_ADMIN',
+  SUPER_ADMIN: 'SUPER_ADMIN',
+  EDITOR: 'EDITOR',
+  VIEWER: 'VIEWER',
+}
+
+export type ROLES = keyof typeof ROLES;
