@@ -3,6 +3,7 @@
 import { WordDTO } from "@/models";
 import { useState } from "react";
 import { WordExamples, WordTitle, WordTranslations, WordType, WordDefinitions } from "@/components/atom";
+import { Card, CardContent, CardActions, Button } from "@/components/atom";
 
 export interface WordCardProps {
   onDelete: () => void;
@@ -29,17 +30,19 @@ export function WordCard({
     setIsEditing(false);
   }
 
-  // TODO: Organize this card better because it's getting too big and loosing lot of space making the home page very 
-  // weird and deorganized with too much space between cards
   return (
-    <div className="max-w-sm mx-auto my-4 p-4 shadow-lg rounded-lg bg-white">
-      <div className="mb-4">
+    <Card elevation={2} className="flex flex-col h-full w-full max-w-sm">
+      <CardContent className="flex-1 pt-4">
         <WordTitle
           word={localWord.word}
           readOnly={!isEditing}
           onChange={newWord => setLocalWord({ ...localWord, word: newWord })}
         />
-        <WordType type={localWord.type} readOnly={!isEditing} onChange={newType => setLocalWord({ ...localWord, type: newType })} />
+        <WordType
+          type={localWord.type}
+          readOnly={!isEditing}
+          onChange={newType => setLocalWord({ ...localWord, type: newType })}
+        />
         {/* TRANSLATIONS */}
         <WordTranslations
           translations={localWord.translations}
@@ -58,43 +61,29 @@ export function WordCard({
           readOnly={!isEditing}
           onChange={newExamples => setLocalWord({ ...localWord, examples: newExamples })}
         />
-      </div>
+      </CardContent>
       {/* Action buttons */}
-      <div className="flex justify-end space-x-2">
-
-        {
-          isEditing ? (
-            <>
-              <button
-                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                onClick={() => handleSave()}
-              >
-                Save
-              </button>
-              <button
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                onClick={handleOnCancel}
-              >
-                Cancel
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                onClick={() => setIsEditing(true)}
-              >
-                Edit
-              </button>
-              <button
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                onClick={onDelete}
-              >
-                Delete
-              </button>
-            </>
-          )}
-      </div>
-    </div>
+      <CardActions className="bg-gray-50 border-t border-gray-100 p-4">
+        {isEditing ? (
+          <>
+            <Button variant="text" color="primary" onClick={handleOnCancel}>
+              Cancel
+            </Button>
+            <Button variant="contained" color="primary" onClick={handleSave}>
+              Save
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button variant="outlined" color="primary" onClick={() => setIsEditing(true)}>
+              Edit
+            </Button>
+            <Button variant="outlined" color="error" onClick={onDelete}>
+              Delete
+            </Button>
+          </>
+        )}
+      </CardActions>
+    </Card>
   );
-};
+}

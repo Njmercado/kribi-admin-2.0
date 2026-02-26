@@ -6,31 +6,39 @@ export interface WordDefinitionsProps {
 
 export function WordDefinitions({ definitions, readOnly, onChange }: WordDefinitionsProps) {
 
-  // TODO: Clean empty lines from definitions
   function handleOnChange(value: string) {
-    const newDefinitions = value.split("\n");
+    // clean empty lines
+    const newDefinitions = value.split("\n").filter(t => t.trim() !== "");
     onChange?.(newDefinitions);
   }
 
+  if (readOnly && (!definitions || definitions.length === 0)) return null;
+
   return readOnly ? (
-    <div className="mt-2">
-      <h3 className="text-lg font-semibold">Definitions:</h3>
-      <ul className="list-disc list-inside text-gray-700">
+    <div className="mt-4">
+      <h3 className="text-sm font-medium text-text-secondary uppercase tracking-wider mb-2">Definitions</h3>
+      <ul className="list-disc list-inside text-text-primary space-y-1 ml-2">
         {definitions?.map((definition, index) => (
           <li key={index}>{definition}</li>
         ))}
       </ul>
     </div>
   ) : (
-    <div className="mt-2">
-      <h3 className="text-lg font-semibold">Definitions:</h3>
+    <div className="relative flex flex-col w-full mt-4 mb-2">
       <textarea
-        className="w-full p-2 border border-gray-300 rounded mt-1"
+        id="wordDefinitions"
+        className="peer w-full bg-transparent text-text-primary p-4 border-2 border-gray-300 focus:border-primary rounded outline-none transition-colors duration-200"
         rows={4}
-        value={definitions?.join("\n")}
+        defaultValue={definitions?.join("\n")}
         onChange={e => handleOnChange(e.target.value)}
         placeholder="Enter definitions, one per line"
       />
+      <label
+        htmlFor="wordDefinitions"
+        className="absolute left-3 top-[-10px] px-1 text-sm transition-all duration-200 pointer-events-none bg-surface text-text-secondary peer-focus:text-primary"
+      >
+        Definitions
+      </label>
     </div>
   );
 }

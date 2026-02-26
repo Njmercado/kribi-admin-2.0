@@ -1,3 +1,5 @@
+import { TextField } from '@/components/atom/TextField';
+
 export interface WordTitleProps {
   word?: string;
   readOnly?: boolean;
@@ -6,13 +8,13 @@ export interface WordTitleProps {
 
 export function WordTitle({ word, readOnly, onChange }: WordTitleProps) {
   return readOnly ? (
-    <h2 className="text-xl font-bold">{word}</h2>
+    <h2 className="text-2xl font-bold text-text-primary capitalize mb-2">{word}</h2>
   ) : (
-    <input
-      className="text-xl font-bold"
-      type="text" defaultValue={word}
+    <TextField
+      label="Word"
+      defaultValue={word}
       onChange={e => onChange?.(e.target.value)}
-      placeholder="Enter word"
+      fullWidth
     />
-  )
+  );
 }

@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from "react"
-import { WordCard } from "@/components/molecule";
+import { WordCard, AddWordDrawer } from "@/components/molecule";
+import { TextField, Button } from "@/components/atom";
 import { WordDTO, IWord } from "@/models";
-import { AddWordDrawer } from "@/components/molecule";
 import { useRequest, search, update, create, erase } from "@/api";
 import { DrawerDirection } from "@/components/atom/drawer";
 
@@ -41,22 +41,22 @@ export default function Home() {
   }
 
   return (
-    <main>
-      <article className="flex flex-col">
-        <section className="flex max-sm:flex-col sm:flex-row items-center justify-center gap-2">
-          <input
-            type="text"
-            placeholder="Buscar palabra"
-            className="text-black rounded-md border-solid border-2 border-black p-2 max-sm:w-full sm:w-1/2"
+    <main className="max-w-7xl mx-auto">
+      <section className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
+        <div className="w-full sm:w-1/2">
+          <TextField
+            label="Search word"
+            fullWidth
             onChange={event => setSearchInput(event.target.value)}
           />
-          <div className="flex flex-row gap-2">
-            <button onClick={handleOnSearch} className="bg-amber-900 p-2 rounded-md text-white font-bold">Buscar</button>
-            <button onClick={handleAddWord} className="bg-green-800 p-2 rounded-md text-white font-bold">Agregar palabra</button>
-          </div>
-        </section>
-      </article>
-      <article className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outlined" color="primary" onClick={handleOnSearch}>Search</Button>
+          <Button variant="contained" color="secondary" onClick={handleAddWord}>Add Word</Button>
+        </div>
+      </section>
+
+      <article className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {
           !isSearchError && getWordsResponse?.map((word: WordDTO, index: number) => (
             <WordCard
