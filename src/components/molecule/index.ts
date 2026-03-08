@@ -5,4 +5,5 @@ export { AddArticleDrawer } from './addArticleDrawer';
 export { Topbar } from './Topbar';
 export { Sidebar } from './Sidebar';
 export { EditWordDrawer } from './editWordDrawer';
+export { WordsTable } from './wordsTable';
 
