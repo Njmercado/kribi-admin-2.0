@@ -1,31 +1,29 @@
 'use client';
 
 import { useCustomRouter } from "@/hooks";
-import { useRequest, logIn, checkAuth } from "@/api";
 import { useEffect } from "react";
 import { useAppDispatch } from "@/libs/store";
 import { setMe } from "@/libs/store/slices";
+import { useLogInMutation, useLazyCheckAuthQuery } from "@/libs/store/api/authApiSlice";
 
 export default function LogIn() {
   const { goHome } = useCustomRouter();
   const dispatch = useAppDispatch();
-  const { request: login, isError: isLoginError } = useRequest(logIn);
-  const { request: checkAuthentication, response: authResponse } = useRequest(checkAuth);
+  const [logIn, { isError: isLoginError }] = useLogInMutation();
+  const [checkAuth, { data: authResponse }] = useLazyCheckAuthQuery();
 
-  function handleOnSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleOnSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const formData = new FormData(form);
-    login(formData);
-    checkAuthentication();
-  }
 
-  useEffect(() => {
-    if (!isLoginError && authResponse) {
-      dispatch(setMe(authResponse));
+    try {
+      await logIn(formData).unwrap();
       goHome();
+    } catch (err) {
+      console.error('Login failed', err);
     }
-  }, [authResponse, goHome, isLoginError, dispatch]);
+  }
 
   return (
     <article>

@@ -7,22 +7,27 @@ import { Action, ActionType } from "@/contants";
 import { ArticleCard, AddArticleDrawer } from "@/components/molecule";
 import { TextField, Button } from "@/components/atom";
 import { ArticleDTO, IArticle } from "@/models";
-import { useRequest } from "@/api";
-// Assuming articleAPI is exported exactly like this
-import * as articleAPI from "@/api/articleAPI";
 import { DrawerDirection } from "@/components/atom/drawer";
+import {
+  useSearchArticlesQuery,
+  useUpdateArticleMutation,
+  useCreateArticleMutation,
+  useDeleteArticleMutation
+} from "@/libs/store/api/articleApiSlice";
 
 export default function Article() {
   const { haveAccess } = useHaveAccess(Action.VIEW_ARTICLE as ActionType);
   const { goHome } = useCustomRouter();
 
   const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const { request: updateArticleRequest } = useRequest<ArticleDTO>(articleAPI.update);
-  const { request: createArticleRequest } = useRequest<ArticleDTO>(articleAPI.create);
-  const { request: eraseArticleRequest } = useRequest(articleAPI.erase);
-  const { response: getArticlesResponse, request: searchArticleRequest, isError: isSearchError } = useRequest<Array<ArticleDTO>>(articleAPI.search);
+  const { data: getArticlesResponse, isError: isSearchError } = useSearchArticlesQuery(debouncedSearch);
+
+  const [updateArticleRequest] = useUpdateArticleMutation();
+  const [createArticleRequest] = useCreateArticleMutation();
+  const [eraseArticleRequest] = useDeleteArticleMutation();
 
   // Avoid SSR crashes by only checking on mount
   useEffect(() => {
@@ -35,29 +40,48 @@ export default function Article() {
     return null;
   }
 
-  function handleOnDelete(articleId: number | string) {
+  async function handleOnDelete(articleId: number | string) {
     const response = confirm('Are you sure you want to delete this article?');
     if (response) {
-      eraseArticleRequest(articleId.toString());
+      try {
+        await eraseArticleRequest(articleId.toString()).unwrap();
+      } catch (err) {
+        console.error('Failed to delete article', err);
+      }
     }
   }
 
-  function handleOnEdit(article: ArticleDTO) {
-    updateArticleRequest(article);
+  async function handleOnEdit(article: ArticleDTO) {
+    try {
+      await updateArticleRequest(article).unwrap();
+    } catch (err) {
+      console.error('Failed to update article', err);
+    }
   }
 
   function handleOnSearch() {
-    searchArticleRequest(searchInput);
+    setDebouncedSearch(searchInput);
   }
 
   function handleAddArticle() {
     setIsDrawerOpen(true);
   }
 
-  function handleOnSubmit(form: IArticle) {
-    createArticleRequest(form);
-    setIsDrawerOpen(false);
+  async function handleOnSubmit(form: IArticle) {
+    try {
+      await createArticleRequest(form).unwrap();
+      setIsDrawerOpen(false);
+    } catch (err) {
+      console.error('Failed to create article', err);
+    }
   }
+
+  // Handle Enter key for search
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      handleOnSearch();
+    }
+  };
 
   return (
     <main className="max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 py-8">
@@ -67,6 +91,7 @@ export default function Article() {
             label="Search Article"
             fullWidth
             onChange={event => setSearchInput(event.target.value)}
+            onKeyDown={handleKeyDown}
           />
         </div>
         <div className="flex gap-2">

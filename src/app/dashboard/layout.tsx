@@ -1,13 +1,11 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { useRequest } from "@/api";
-import { logOut, checkAuth } from "@/api";
 import { useCustomRouter } from "@/hooks";
-import { AuthResponse } from "@/models";
 import { useAppSelector, useAppDispatch } from "@/libs/store";
 import { setMe, clearMe } from "@/libs/store/slices";
 import { Topbar, Sidebar } from "@/components/molecule";
+import { useCheckAuthQuery, useLogOutMutation } from "@/libs/store/api/authApiSlice";
 
 export default function GeneralLayout({ children }: { children: React.ReactNode }) {
   const { goLogin } = useCustomRouter();
@@ -16,32 +14,34 @@ export default function GeneralLayout({ children }: { children: React.ReactNode 
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const { request: logOutRequest } = useRequest(logOut);
-  const { request: checkAuthRequest, response: checkAuthResponse, isError: isAuthError } = useRequest<AuthResponse>(checkAuth);
-
-  // Only call /me if Redux state is empty (e.g. page refresh)
-  useEffect(() => {
-    if (!me.fullName) {
-      checkAuthRequest();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const [logOut] = useLogOutMutation();
+  // Using RTK Query, we can just call it unconditionally; 
+  // skip: true prevents it from firing if we already have the user in Redux.
+  const { data: authResponse, isError: isAuthError } = useCheckAuthQuery(undefined, {
+    skip: !!me.fullName
+  });
 
   // Sync API response back into Redux store
   useEffect(() => {
-    if (isAuthError && !checkAuthResponse) {
+    if (isAuthError && !authResponse) {
       goLogin();
     }
 
-    if (checkAuthResponse) {
-      dispatch(setMe(checkAuthResponse));
+    if (authResponse) {
+      dispatch(setMe(authResponse));
     }
-  }, [checkAuthResponse, dispatch, isAuthError, goLogin]);
+  }, [authResponse, dispatch, isAuthError, goLogin]);
 
-  function handleLogOut() {
-    logOutRequest();
-    dispatch(clearMe());
-    goLogin();
+  async function handleLogOut() {
+    try {
+      await logOut().unwrap();
+      dispatch(clearMe());
+      goLogin();
+    } catch (error) {
+      console.error('Logout failed', error);
+      dispatch(clearMe());
+      goLogin();
+    }
   }
 
   return (

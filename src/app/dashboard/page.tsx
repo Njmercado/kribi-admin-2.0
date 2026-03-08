@@ -1,40 +1,60 @@
 'use client'
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { AddWordDrawer, EditWordDrawer, WordsTable } from "@/components/molecule";
 import { TextField, Button } from "@/components/atom";
-import { WordDTO, IWord, WordSearchDTO } from "@/models";
-import { useRequest, search, update, create, erase } from "@/api";
+import { WordDTO, IWord } from "@/models";
 import { DrawerDirection } from "@/components/atom/drawer";
+import {
+  useSearchWordsQuery,
+  useCreateWordMutation,
+  useUpdateWordMutation,
+  useDeleteWordMutation
+} from "@/libs/store/api/wordApiSlice";
 
 export default function Home() {
 
   const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [editingWord, setEditingWord] = useState<WordDTO | null>(null);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const { request: updateWordRequest } = useRequest<WordDTO>(update);
-  const { request: createWordRequest } = useRequest<WordDTO>(create);
-  const { request: eraseWordRequest } = useRequest(erase);
-  const { response: getWordsResponse, request: searchWordRequest, isError: isSearchError } = useRequest<WordSearchDTO>(search);
+
+  const { data: getWordsResponse, isError: isSearchError } = useSearchWordsQuery({
+    word: debouncedSearch,
+    limit,
+    page
+  });
+
+  const [updateWordRequest] = useUpdateWordMutation();
+  const [createWordRequest] = useCreateWordMutation();
+  const [eraseWordRequest] = useDeleteWordMutation();
 
   function handleEditClick(word: WordDTO) {
     setEditingWord(word);
     setIsEditDrawerOpen(true);
   }
 
-  function handleSaveEdit(updatedWord: WordDTO) {
-    updateWordRequest(updatedWord);
-    setIsEditDrawerOpen(false);
-    setEditingWord(null);
+  async function handleSaveEdit(updatedWord: WordDTO) {
+    try {
+      await updateWordRequest(updatedWord).unwrap();
+      setIsEditDrawerOpen(false);
+      setEditingWord(null);
+    } catch (err) {
+      console.error('Failed to update word', err);
+    }
   }
 
-  function handleDeleteEdit(wordId: string) {
-    eraseWordRequest(wordId);
-    setIsEditDrawerOpen(false);
-    setEditingWord(null);
+  async function handleDeleteEdit(wordId: string) {
+    try {
+      await eraseWordRequest(wordId).unwrap();
+      setIsEditDrawerOpen(false);
+      setEditingWord(null);
+    } catch (err) {
+      console.error('Failed to delete word', err);
+    }
   }
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -43,25 +63,33 @@ export default function Home() {
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLimit(parseInt(event.target.value, 10));
-    setPage(0);
+    setPage(1);
   };
 
-  async function handleOnSearch() {
-    searchWordRequest(searchInput);
+  function handleOnSearch() {
+    setPage(1);
+    setDebouncedSearch(searchInput);
   }
 
   function handleAddWord() {
     setIsDrawerOpen(true);
   }
 
-  function handleOnSubmit(form: IWord) {
-    createWordRequest(form);
-    setIsDrawerOpen(false);
+  async function handleOnSubmit(form: IWord) {
+    try {
+      await createWordRequest(form).unwrap();
+      setIsDrawerOpen(false);
+    } catch (err) {
+      console.error('Failed to create word', err);
+    }
   }
 
-  useEffect(() => {
-    searchWordRequest(searchInput, limit, page);
-  }, [page, limit, searchInput, searchWordRequest]);
+  // Handle Enter key for search
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      handleOnSearch();
+    }
+  };
 
   return (
     <main className="max-w-7xl mx-auto">
@@ -71,6 +99,7 @@ export default function Home() {
             label="Search word"
             fullWidth
             onChange={event => setSearchInput(event.target.value)}
+            onKeyDown={handleKeyDown}
           />
         </div>
         <div className="flex gap-2">
