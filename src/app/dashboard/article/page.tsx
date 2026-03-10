@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from "react";
-import { useHaveAccess } from "@/hooks";
+import { useHaveAccess, useAlert, AlertType } from "@/hooks";
 import { useCustomRouter } from "@/hooks";
 import { Action, ActionType } from "@/contants";
 import { AddArticleDrawer, EditArticleDrawer, ArticlesTable } from "@/components/molecule";
@@ -14,6 +14,17 @@ import {
   useCreateArticleMutation,
   useDeleteArticleMutation
 } from "@/libs/store/api/articleApiSlice";
+
+export enum ArticleActionsMessages {
+  ARTICLE_CREATED_SUCCESSFULLY = 'Article created successfully',
+  ARTICLE_UPDATED_SUCCESSFULLY = 'Article updated successfully',
+  ARTICLE_DELETED_SUCCESSFULLY = 'Article deleted successfully',
+  ARTICLE_NOT_FOUND = 'Article not found',
+  ARTICLE_ALREADY_EXISTS = 'Article already exists',
+  ARTICLE_COULD_NOT_BE_CREATED = 'Article could not be created',
+  ARTICLE_COULD_NOT_BE_UPDATED = 'Article could not be updated',
+  ARTICLE_COULD_NOT_BE_DELETED = 'Article could not be deleted',
+}
 
 export default function Article() {
   const { haveAccess } = useHaveAccess(Action.VIEW_ARTICLE as ActionType);
@@ -35,6 +46,8 @@ export default function Article() {
   const [createArticleRequest] = useCreateArticleMutation();
   const [eraseArticleRequest] = useDeleteArticleMutation();
 
+  const { openAlert, Toast } = useAlert();
+
   // Avoid SSR crashes by only checking on mount
   useEffect(() => {
     if (!haveAccess()) {
@@ -55,8 +68,9 @@ export default function Article() {
     try {
       await createArticleRequest(form).unwrap();
       setIsDrawerOpen(false);
-    } catch (err) {
-      console.error('Failed to create article', err);
+      openAlert(ArticleActionsMessages.ARTICLE_CREATED_SUCCESSFULLY, AlertType.SUCCESS);
+    } catch (err: any) {
+      openAlert(err.data.message, AlertType.ERROR);
     }
   }
 
@@ -70,20 +84,21 @@ export default function Article() {
       await updateArticleRequest(updatedArticle).unwrap();
       setIsEditDrawerOpen(false);
       setEditingArticle(null);
-    } catch (err) {
-      console.error('Failed to update article', err);
+      openAlert(ArticleActionsMessages.ARTICLE_UPDATED_SUCCESSFULLY, AlertType.SUCCESS);
+    } catch (err: any) {
+      openAlert(err.data.message, AlertType.ERROR);
     }
   }
 
   async function handleDeleteEdit(articleId: string) {
-    const response = confirm('Are you sure you want to delete this article?');
-    if (response) {
+    if (confirm('Are you sure you want to delete this article?')) {
       try {
         await eraseArticleRequest(articleId).unwrap();
         setIsEditDrawerOpen(false);
         setEditingArticle(null);
-      } catch (err) {
-        console.error('Failed to delete article', err);
+        openAlert(ArticleActionsMessages.ARTICLE_DELETED_SUCCESSFULLY, AlertType.SUCCESS);
+      } catch (err: any) {
+        openAlert(err.data.message, AlertType.ERROR);
       }
     }
   }
@@ -146,11 +161,16 @@ export default function Article() {
       <EditArticleDrawer
         isOpen={isEditDrawerOpen}
         article={editingArticle}
-        onClose={() => { setIsEditDrawerOpen(false); setEditingArticle(null); }}
+        onClose={() => {
+          setIsEditDrawerOpen(false);
+          setEditingArticle(null);
+        }}
         direction={DrawerDirection.RIGHT_TO_LEFT}
         onSubmit={(form: ArticleDTO) => handleSaveEdit(form)}
         onDelete={(id: string) => handleDeleteEdit(id)}
       />
+
+      {Toast}
     </main>
   );
 }
