@@ -11,7 +11,7 @@ export const PREFIXES = {
 
 export const API_ENDPOINTS = {
   WORD: {
-    SEARCH: '/search/',
+    SEARCH: '/search',
   },
   ARTICLE: {
     SEARCH: '/search',
