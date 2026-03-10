@@ -14,7 +14,7 @@ export const API_ENDPOINTS = {
     SEARCH: '/search/',
   },
   ARTICLE: {
-    SEARCH: '/search/',
+    SEARCH: '/search',
   }
 };
 

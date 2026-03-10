@@ -1,16 +1,11 @@
 'use client';
 
 import { useCustomRouter } from "@/hooks";
-import { useEffect } from "react";
-import { useAppDispatch } from "@/libs/store";
-import { setMe } from "@/libs/store/slices";
-import { useLogInMutation, useLazyCheckAuthQuery } from "@/libs/store/api/authApiSlice";
+import { useLogInMutation } from "@/libs/store/api/authApiSlice";
 
 export default function LogIn() {
   const { goHome } = useCustomRouter();
-  const dispatch = useAppDispatch();
-  const [logIn, { isError: isLoginError }] = useLogInMutation();
-  const [checkAuth, { data: authResponse }] = useLazyCheckAuthQuery();
+  const [logIn] = useLogInMutation();
 
   async function handleOnSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useHaveAccess } from "@/hooks";
 import { useCustomRouter } from "@/hooks";
 import { Action, ActionType } from "@/contants";
-import { ArticleCard, AddArticleDrawer } from "@/components/molecule";
+import { AddArticleDrawer, EditArticleDrawer, ArticlesTable } from "@/components/molecule";
 import { TextField, Button } from "@/components/atom";
 import { ArticleDTO, IArticle } from "@/models";
 import { DrawerDirection } from "@/components/atom/drawer";
@@ -23,7 +23,13 @@ export default function Article() {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const { data: getArticlesResponse, isError: isSearchError } = useSearchArticlesQuery(debouncedSearch);
+  // Table state
+  const [editingArticle, setEditingArticle] = useState<ArticleDTO | null>(null);
+  const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+
+  const { data: getArticlesResponse, isError: isSearchError } = useSearchArticlesQuery({ value: debouncedSearch, limit, page });
 
   const [updateArticleRequest] = useUpdateArticleMutation();
   const [createArticleRequest] = useCreateArticleMutation();
@@ -40,29 +46,7 @@ export default function Article() {
     return null;
   }
 
-  async function handleOnDelete(articleId: number | string) {
-    const response = confirm('Are you sure you want to delete this article?');
-    if (response) {
-      try {
-        await eraseArticleRequest(articleId.toString()).unwrap();
-      } catch (err) {
-        console.error('Failed to delete article', err);
-      }
-    }
-  }
-
-  async function handleOnEdit(article: ArticleDTO) {
-    try {
-      await updateArticleRequest(article).unwrap();
-    } catch (err) {
-      console.error('Failed to update article', err);
-    }
-  }
-
-  function handleOnSearch() {
-    setDebouncedSearch(searchInput);
-  }
-
+  // --- Handlers for Create/Edit/Delete ---
   function handleAddArticle() {
     setIsDrawerOpen(true);
   }
@@ -76,11 +60,53 @@ export default function Article() {
     }
   }
 
-  // Handle Enter key for search
+  function handleEditClick(article: ArticleDTO) {
+    setEditingArticle(article);
+    setIsEditDrawerOpen(true);
+  }
+
+  async function handleSaveEdit(updatedArticle: ArticleDTO) {
+    try {
+      await updateArticleRequest(updatedArticle).unwrap();
+      setIsEditDrawerOpen(false);
+      setEditingArticle(null);
+    } catch (err) {
+      console.error('Failed to update article', err);
+    }
+  }
+
+  async function handleDeleteEdit(articleId: string) {
+    const response = confirm('Are you sure you want to delete this article?');
+    if (response) {
+      try {
+        await eraseArticleRequest(articleId).unwrap();
+        setIsEditDrawerOpen(false);
+        setEditingArticle(null);
+      } catch (err) {
+        console.error('Failed to delete article', err);
+      }
+    }
+  }
+
+  // --- Handlers for Search & Paging ---
+  function handleOnSearch() {
+    setPage(1); // Reset to first page
+    setDebouncedSearch(searchInput);
+  }
+
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
       handleOnSearch();
     }
+  };
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage + 1);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setLimit(parseInt(event.target.value, 10));
+    setPage(1);
   };
 
   return (
@@ -100,18 +126,15 @@ export default function Article() {
         </div>
       </section>
 
-      <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {
-          !isSearchError && getArticlesResponse?.map((article: ArticleDTO, index: number) => (
-            <ArticleCard
-              key={index}
-              article={article}
-              onDelete={() => handleOnDelete(article.id)}
-              onEdit={(updatedArticle: ArticleDTO) => handleOnEdit(updatedArticle)}
-            />
-          ))
-        }
-      </section>
+      <ArticlesTable
+        articlesResponse={getArticlesResponse}
+        isSearchError={isSearchError}
+        page={page}
+        limit={limit}
+        onEditClick={handleEditClick}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
 
       <AddArticleDrawer
         isOpen={isDrawerOpen}
@@ -119,6 +142,15 @@ export default function Article() {
         direction={DrawerDirection.RIGHT_TO_LEFT}
         onSubmit={(form: IArticle) => handleOnSubmit(form)}
       />
+
+      <EditArticleDrawer
+        isOpen={isEditDrawerOpen}
+        article={editingArticle}
+        onClose={() => { setIsEditDrawerOpen(false); setEditingArticle(null); }}
+        direction={DrawerDirection.RIGHT_TO_LEFT}
+        onSubmit={(form: ArticleDTO) => handleSaveEdit(form)}
+        onDelete={(id: string) => handleDeleteEdit(id)}
+      />
     </main>
-  )
+  );
 }

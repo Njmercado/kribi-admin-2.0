@@ -1,9 +1,11 @@
-export { WordCard } from './word';
-export { ArticleCard } from './article';
-export { AddWordDrawer } from './addWordDrawer';
-export { AddArticleDrawer } from './addArticleDrawer';
-export { Topbar } from './Topbar';
-export { Sidebar } from './Sidebar';
-export { EditWordDrawer } from './editWordDrawer';
-export { WordsTable } from './wordsTable';
-
+export * from './word';
+export * from './Topbar';
+export * from './Sidebar';
+export * from './word';
+export * from './addWordDrawer';
+export * from './editWordDrawer';
+export * from './addArticleDrawer';
+export * from './editArticleDrawer';
+export * from './article';
+export * from './wordsTable';
+export * from './articlesTable';
