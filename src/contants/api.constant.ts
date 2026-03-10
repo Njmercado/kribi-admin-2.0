@@ -6,11 +6,15 @@ export const API_ACTIONS = {
 export const PREFIXES = {
   WORD: '/word',
   AUTH: '/auth',
+  ARTICLE: '/articles',
 }
 
 export const API_ENDPOINTS = {
   WORD: {
     SEARCH: '/search/',
+  },
+  ARTICLE: {
+    SEARCH: '/search',
   }
 };
 

@@ -7,11 +7,29 @@ export enum DrawerDirection {
   RIGHT_TO_LEFT = 'right-to-left',
 }
 
+export enum DrawerSize {
+  SMALL = 'small',
+  MEDIUM = 'medium',
+  LARGE = 'large',
+}
+
+const DRAWER_WIDTH_SIZES = {
+  [DrawerSize.SMALL]: 'w-1/4',
+  [DrawerSize.MEDIUM]: 'w-1/2',
+  [DrawerSize.LARGE]: 'w-3/4',
+}
+
+const DRAWER_HEIGHT_SIZES = {
+  [DrawerSize.SMALL]: 'h-1/4',
+  [DrawerSize.MEDIUM]: 'h-1/2',
+  [DrawerSize.LARGE]: 'h-3/4',
+}
+
 const DRAWER_DIRECTIONS = {
-  [DrawerDirection.TOP_TO_BOTTOM]: 'top-0 left-0 right-0 h-1/2',
-  [DrawerDirection.BOTTOM_TO_TOP]: 'bottom-0 left-0 right-0 h-1/2',
-  [DrawerDirection.LEFT_TO_RIGHT]: 'top-0 left-0 bottom-0 w-1/2',
-  [DrawerDirection.RIGHT_TO_LEFT]: 'top-0 right-0 bottom-0 w-1/2',
+  [DrawerDirection.TOP_TO_BOTTOM]: (size: DrawerSize = DrawerSize.MEDIUM) => 'top-0 left-0 right-0 ' + DRAWER_HEIGHT_SIZES[size],
+  [DrawerDirection.BOTTOM_TO_TOP]: (size: DrawerSize = DrawerSize.MEDIUM) => 'bottom-0 left-0 right-0 ' + DRAWER_HEIGHT_SIZES[size],
+  [DrawerDirection.LEFT_TO_RIGHT]: (size: DrawerSize = DrawerSize.MEDIUM) => 'top-0 left-0 bottom-0 ' + DRAWER_WIDTH_SIZES[size],
+  [DrawerDirection.RIGHT_TO_LEFT]: (size: DrawerSize = DrawerSize.MEDIUM) => 'top-0 right-0 bottom-0 ' + DRAWER_WIDTH_SIZES[size],
 }
 
 export interface DrawerProps {
@@ -19,6 +37,7 @@ export interface DrawerProps {
   children: React.ReactNode;
   onClose: () => void;
   isOpen: boolean;
+  size?: DrawerSize;
 }
 
 export function Drawer({
@@ -26,6 +45,7 @@ export function Drawer({
   children,
   onClose,
   isOpen,
+  size = DrawerSize.MEDIUM,
 }: DrawerProps) {
 
   useEffect(() => {
@@ -42,7 +62,7 @@ export function Drawer({
   }, [onClose]);
 
   const getDrawerStyles = (directionValue: DrawerDirection) => {
-    return DRAWER_DIRECTIONS[directionValue];
+    return DRAWER_DIRECTIONS[directionValue](size);
   };
 
   const getCloseButtonPosition = () => {

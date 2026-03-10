@@ -1,47 +1,62 @@
 'use client';
 
-import { useEffect } from "react";
-import { useRequest } from "@/api";
-import { logOut, checkAuth } from "@/api";
-import { useCustomRouter } from "@/utils";
-import { AuthResponse } from "@/models";
+import { useEffect, useState } from "react";
+import { useCustomRouter } from "@/hooks";
+import { useAppSelector, useAppDispatch } from "@/libs/store";
+import { setMe, clearMe } from "@/libs/store/slices";
+import { Topbar, Sidebar } from "@/components/molecule";
+import { useCheckAuthQuery, useLogOutMutation } from "@/libs/store/api/authApiSlice";
 
 export default function GeneralLayout({ children }: { children: React.ReactNode }) {
   const { goLogin } = useCustomRouter();
-  const { request: logOutRequest, response: logOutResponse } = useRequest(logOut);
-  const { request: checkAuthRequest, response: checkAuthResponse, isError: isAuthError } = useRequest<AuthResponse>(checkAuth);
+  const dispatch = useAppDispatch();
+  const me = useAppSelector((state) => state.me);
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const [logOut] = useLogOutMutation();
+  // Using RTK Query, we can just call it unconditionally; 
+  // skip: true prevents it from firing if we already have the user in Redux.
+  const { data: authResponse, isError: isAuthError } = useCheckAuthQuery(undefined, {
+    skip: !!me.fullName
+  });
+
+  // Sync API response back into Redux store
   useEffect(() => {
-    if (logOutResponse || isAuthError) {
+    if (isAuthError && !authResponse) {
       goLogin();
     }
-  }, [isAuthError, logOutResponse, goLogin]);
 
-  useEffect(() => {
-    checkAuthRequest();
-  }, []);
+    if (authResponse) {
+      dispatch(setMe(authResponse));
+    }
+  }, [authResponse, dispatch, isAuthError, goLogin]);
 
-  function handleLogOut() {
-    logOutRequest();
+  async function handleLogOut() {
+    try {
+      await logOut().unwrap();
+      dispatch(clearMe());
+      goLogin();
+    } catch (error) {
+      console.error('Logout failed', error);
+      dispatch(clearMe());
+      goLogin();
+    }
   }
 
-  // TODO: improve the layout and header design
   return (
-    <div>
-      <header className="p-4 bg-gray-800 text-white flex justify-between items-center">
-        {
-          checkAuthResponse && <h1>Welcome, {checkAuthResponse.full_name}</h1>
-        }
-        <button
-          onClick={handleLogOut}
-          className="bg-red-500 rounded-md p-2 text-white font-bold"
-        >
-          Logout
-        </button>
-      </header>
-      <main className="p-4">
-        {children}
-      </main>
+    <div className="flex h-screen overflow-hidden bg-background">
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      <div className="flex flex-col flex-1 w-full relative">
+        <Topbar
+          userName={me.fullName}
+          onLogout={handleLogOut}
+          onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+        />
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-background">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }

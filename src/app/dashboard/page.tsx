@@ -1,79 +1,138 @@
 'use client'
 
 import { useState } from "react"
-import { WordCard } from "@/components/molecules";
+import { AddWordDrawer, EditWordDrawer, WordsTable } from "@/components/molecule";
+import { TextField, Button } from "@/components/atom";
 import { WordDTO, IWord } from "@/models";
-import { AddWordDrawer } from "@/components/molecules";
-import { useRequest, search, update, create, erase } from "@/api";
 import { DrawerDirection } from "@/components/atom/drawer";
+import {
+  useSearchWordsQuery,
+  useCreateWordMutation,
+  useUpdateWordMutation,
+  useDeleteWordMutation
+} from "@/libs/store/api/wordApiSlice";
 
 export default function Home() {
 
   const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const { request: updateWordRequest } = useRequest<WordDTO>(update);
-  const { request: createWordRequest } = useRequest<WordDTO>(create);
-  const { request: eraseWordRequest } = useRequest(erase);
-  const { response: getWordsResponse, request: searchWordRequest, isError: isSearchError } = useRequest<Array<WordDTO>>(search);
+  const [editingWord, setEditingWord] = useState<WordDTO | null>(null);
+  const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
 
-  function handleOnDelete(wordId: number | string) {
-    const response = confirm('Are you sure you want to delete this word?');
-    if (response) {
-      eraseWordRequest(wordId.toString());
+  const { data: getWordsResponse, isError: isSearchError } = useSearchWordsQuery({
+    word: debouncedSearch,
+    limit,
+    page
+  });
+
+  const [updateWordRequest] = useUpdateWordMutation();
+  const [createWordRequest] = useCreateWordMutation();
+  const [eraseWordRequest] = useDeleteWordMutation();
+
+  function handleEditClick(word: WordDTO) {
+    setEditingWord(word);
+    setIsEditDrawerOpen(true);
+  }
+
+  async function handleSaveEdit(updatedWord: WordDTO) {
+    try {
+      await updateWordRequest(updatedWord).unwrap();
+      setIsEditDrawerOpen(false);
+      setEditingWord(null);
+    } catch (err) {
+      console.error('Failed to update word', err);
     }
   }
 
-  function handleOnEdit(word: WordDTO) {
-    updateWordRequest(word);
+  async function handleDeleteEdit(wordId: string) {
+    try {
+      await eraseWordRequest(wordId).unwrap();
+      setIsEditDrawerOpen(false);
+      setEditingWord(null);
+    } catch (err) {
+      console.error('Failed to delete word', err);
+    }
   }
 
-  async function handleOnSearch() {
-    searchWordRequest(searchInput);
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage + 1);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setLimit(parseInt(event.target.value, 10));
+    setPage(1);
+  };
+
+  function handleOnSearch() {
+    setPage(1);
+    setDebouncedSearch(searchInput);
   }
 
   function handleAddWord() {
     setIsDrawerOpen(true);
   }
 
-  function handleOnSubmit(form: IWord) {
-    createWordRequest(form);
-    setIsDrawerOpen(false);
+  async function handleOnSubmit(form: IWord) {
+    try {
+      await createWordRequest(form).unwrap();
+      setIsDrawerOpen(false);
+    } catch (err) {
+      console.error('Failed to create word', err);
+    }
   }
 
+  // Handle Enter key for search
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      handleOnSearch();
+    }
+  };
+
   return (
-    <main>
-      <article className="flex flex-col">
-        <section className="flex max-sm:flex-col sm:flex-row items-center justify-center gap-2">
-          <input
-            type="text"
-            placeholder="Buscar palabra"
-            className="text-black rounded-md border-solid border-2 border-black p-2 max-sm:w-full sm:w-1/2"
+    <main className="max-w-7xl mx-auto">
+      <section className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
+        <div className="w-full sm:w-1/2">
+          <TextField
+            label="Search word"
+            fullWidth
             onChange={event => setSearchInput(event.target.value)}
+            onKeyDown={handleKeyDown}
           />
-          <div className="flex flex-row gap-2">
-            <button onClick={handleOnSearch} className="bg-amber-900 p-2 rounded-md text-white font-bold">Buscar</button>
-            <button onClick={handleAddWord} className="bg-green-800 p-2 rounded-md text-white font-bold">Agregar palabra</button>
-          </div>
-        </section>
-      </article>
-      <article className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
-        {
-          !isSearchError && getWordsResponse?.map((word: WordDTO, index: number) => (
-            <WordCard
-              key={index}
-              word={word}
-              onDelete={() => handleOnDelete(word.id as string)}
-              onEdit={(updateWord: WordDTO) => handleOnEdit(updateWord)}
-            />
-          ))
-        }
-      </article>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outlined" color="primary" onClick={handleOnSearch}>Search</Button>
+          <Button variant="contained" color="secondary" onClick={handleAddWord}>Add Word</Button>
+        </div>
+      </section>
+
+      <WordsTable
+        wordsResponse={getWordsResponse}
+        isSearchError={isSearchError}
+        page={page}
+        limit={limit}
+        onEditClick={handleEditClick}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+        setPage={setPage}
+      />
 
       <AddWordDrawer
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
         direction={DrawerDirection.RIGHT_TO_LEFT}
         onSubmit={(form: IWord) => handleOnSubmit(form)}
+      />
+
+      <EditWordDrawer
+        isOpen={isEditDrawerOpen}
+        word={editingWord}
+        onClose={() => { setIsEditDrawerOpen(false); setEditingWord(null); }}
+        direction={DrawerDirection.RIGHT_TO_LEFT}
+        onSave={(form: WordDTO) => handleSaveEdit(form)}
+        onDelete={(id: string) => handleDeleteEdit(id)}
       />
     </main>
   )
