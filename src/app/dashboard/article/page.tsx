@@ -69,8 +69,8 @@ export default function Article() {
       await createArticleRequest(form).unwrap();
       setIsDrawerOpen(false);
       openAlert(ArticleActionsMessages.ARTICLE_CREATED_SUCCESSFULLY, AlertType.SUCCESS);
-    } catch (err: any) {
-      openAlert(err.data.message, AlertType.ERROR);
+    } catch (err) {
+      openAlert(err as string, AlertType.ERROR);
     }
   }
 
@@ -85,8 +85,8 @@ export default function Article() {
       setIsEditDrawerOpen(false);
       setEditingArticle(null);
       openAlert(ArticleActionsMessages.ARTICLE_UPDATED_SUCCESSFULLY, AlertType.SUCCESS);
-    } catch (err: any) {
-      openAlert(err.data.message, AlertType.ERROR);
+    } catch (err) {
+      openAlert(err as string, AlertType.ERROR);
     }
   }
 
@@ -97,8 +97,8 @@ export default function Article() {
         setIsEditDrawerOpen(false);
         setEditingArticle(null);
         openAlert(ArticleActionsMessages.ARTICLE_DELETED_SUCCESSFULLY, AlertType.SUCCESS);
-      } catch (err: any) {
-        openAlert(err.data.message, AlertType.ERROR);
+      } catch (err) {
+        openAlert(err as string, AlertType.ERROR);
       }
     }
   }
