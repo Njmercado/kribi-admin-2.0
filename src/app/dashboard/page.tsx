@@ -93,8 +93,14 @@ export default function Home() {
 
   return (
     <main className="max-w-7xl mx-auto">
+
+      <section className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight text-text-primary mb-2">Words Management</h1>
+        <p className="text-text-secondary">Search, view and manage Words</p>
+      </section>
+
       <section className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
-        <div className="w-full sm:w-1/2">
+        <div className="w-full sm:flex-1">
           <TextField
             label="Search word"
             fullWidth

@@ -9,3 +9,6 @@ export * from './editArticleDrawer';
 export * from './article';
 export * from './wordsTable';
 export * from './articlesTable';
+export * from './usersTable';
+export * from './editUserDrawer';
+export * from './addUserDrawer';

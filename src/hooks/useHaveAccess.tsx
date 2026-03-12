@@ -1,19 +1,21 @@
 'use client';
-import { useAppSelector } from "@/libs/store";
-import { ActionType } from "@/contants";
+import { ActionType, Action } from "@/contants";
+import { useCheckAuthQuery } from "@/libs/store/api/authApiSlice";
 
-export function useHaveAccess(action: ActionType) {
-  const me = useAppSelector((state) => state.me);
+export function useHaveAccess() {
+  const { data: me } = useCheckAuthQuery();
 
-  const haveEntitlements = () => me?.entitlements.includes(action);
-  const haveRole = () => me?.role === action;
+  const haveEntitlements = (action: ActionType) => me?.entitlements.includes(action);
+  const haveRole = (action: ActionType) => me?.role === action;
+  const isSuperAdmin = () => me?.role === Action.SUPER_ADMIN;
 
-  const haveAccess = () => haveEntitlements() || haveRole();
+  const haveAccess = (action: ActionType) => haveEntitlements(action) || haveRole(action) || isSuperAdmin();
 
   return {
     me,
     haveEntitlements,
     haveRole,
+    isSuperAdmin,
     haveAccess
   }
 }

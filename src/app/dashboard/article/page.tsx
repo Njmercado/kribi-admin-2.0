@@ -17,7 +17,7 @@ import {
 import { ArticleActionsMessages } from "@/contants/article.constant";
 
 export default function Article() {
-  const { haveAccess } = useHaveAccess(Action.VIEW_ARTICLE as ActionType);
+  const { haveAccess } = useHaveAccess();
   const { goHome } = useCustomRouter();
 
   const [searchInput, setSearchInput] = useState('');
@@ -40,14 +40,10 @@ export default function Article() {
 
   // Avoid SSR crashes by only checking on mount
   useEffect(() => {
-    if (!haveAccess()) {
+    if (!haveAccess(Action.VIEW_ARTICLE as ActionType)) {
       goHome();
     }
   }, [haveAccess, goHome]);
-
-  if (!haveAccess()) {
-    return null;
-  }
 
   // --- Handlers for Create/Edit/Delete ---
   function handleAddArticle() {
@@ -116,8 +112,14 @@ export default function Article() {
 
   return (
     <main className="max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 py-8">
-      <section className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
-        <div className="w-full sm:w-1/2">
+
+      <section className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight text-text-primary mb-2">Articles Management</h1>
+        <p className="text-text-secondary">Search, view and manage articles</p>
+      </section>
+
+      <section className="flex flex-col sm:flex-row items-center gap-4 mb-8">
+        <div className="w-full sm:flex-1">
           <TextField
             label="Search Article"
             fullWidth

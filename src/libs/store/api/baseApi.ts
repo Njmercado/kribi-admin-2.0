@@ -7,6 +7,6 @@ export const baseApi = createApi({
     baseUrl: process.env.NEXT_PUBLIC_API_URL,
     credentials: 'include',
   }),
-  tagTypes: ['Word', 'Article', 'Auth', 'Me'], // Definitions for caching logic
+  tagTypes: ['Word', 'Article', 'Auth', 'Me', 'User'], // Definitions for caching logic
   endpoints: () => ({}), // Endpoints are injected by specific feature slices
 });
