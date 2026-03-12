@@ -112,8 +112,14 @@ export default function Article() {
 
   return (
     <main className="max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 py-8">
-      <section className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
-        <div className="w-full sm:w-1/2">
+
+      <section className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight text-text-primary mb-2">Articles Management</h1>
+        <p className="text-text-secondary">Search, view and manage articles</p>
+      </section>
+
+      <section className="flex flex-col sm:flex-row items-center gap-4 mb-8">
+        <div className="w-full sm:flex-1">
           <TextField
             label="Search Article"
             fullWidth

@@ -155,7 +155,7 @@ export default function Users() {
         <p className="text-text-secondary">Search, view and manage administrator accounts</p>
       </section>
 
-      <section className="flex flex-col sm:flex-row items-end gap-4 mb-8">
+      <section className="flex flex-col sm:flex-row gap-4 mb-8">
         <div className="w-full sm:flex-1">
           <TextField
             label={`Search by ${searchType}`}
@@ -165,7 +165,8 @@ export default function Users() {
           />
         </div>
         <div className="flex gap-2">
-          <Button variant="contained" color="primary" onClick={handleOnSearch}>Search</Button>
+          <Button variant="outlined" color="primary" onClick={handleOnSearch}>Search</Button>
+          <Button variant="contained" color="secondary">Add User</Button>
         </div>
       </section>
 
