@@ -46,7 +46,6 @@ export function UsersTable({
 
   useEffect(() => {
     checkAuth().then((res) => {
-      console.log(res)
       const entitlements = res.data?.entitlements as ENTITLEMENTS[];
       setCanEdit(entitlements.includes(Action.EDIT_USER as ENTITLEMENTS));
     });
