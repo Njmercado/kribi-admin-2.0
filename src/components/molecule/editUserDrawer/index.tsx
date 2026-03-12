@@ -159,7 +159,7 @@ export function EditUserDrawer({
 
         <section>
           <Button id="active-button" variant="contained" color={user.is_active ? 'error' : 'primary'} onClick={() => handleActiveButton()}>
-            {user.is_active ? 'Delete' : 'Restore'}
+            {user.is_active ? 'Deactivate' : 'Activate'}
           </Button>
         </section>
 

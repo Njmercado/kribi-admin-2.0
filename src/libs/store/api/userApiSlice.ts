@@ -9,14 +9,14 @@ export const userApiSlice = baseApi.injectEndpoints({
         `${PREFIXES.USER}${API_ENDPOINTS.USER.BY_NAME}?value=${encodeURIComponent(value)}&page=${page}&limit=${limit}`,
       providesTags: ['User'],
     }),
-    restoreUser: builder.mutation<UserDTO, number>({
+    restoreUser: builder.mutation<UserDTO, string | number>({
       query: (id) => ({
         url: `${PREFIXES.USER}${API_ENDPOINTS.USER.RESTORE}/${id}`,
         method: 'POST',
       }),
       invalidatesTags: ['User'],
     }),
-    deleteUser: builder.mutation<void, number>({
+    deleteUser: builder.mutation<void, string | number>({
       query: (id) => ({
         url: `${PREFIXES.USER}/${id}`,
         method: 'DELETE',

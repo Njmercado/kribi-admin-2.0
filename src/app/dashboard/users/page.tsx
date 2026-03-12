@@ -29,7 +29,7 @@ export default function Users() {
   const [limit, setLimit] = useState(10);
 
   // Edit drawer state
-  const [editingUser, setEditingUser] = useState<UserDTO | null>(null);
+  const [editingUser, setEditingUser] = useState<UserDTO>({} as UserDTO);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
 
   // Lazy queries
@@ -108,7 +108,7 @@ export default function Users() {
     try {
       const response = await updateUserRequest(updatedUser).unwrap();
       setIsEditDrawerOpen(false);
-      setEditingUser(null);
+      setEditingUser({} as UserDTO);
       // Update local state with the new data
       setUsers(prev => prev.map(u => u.id === response.id ? response : u));
       openAlert(UserActionsMessages.USER_UPDATED_SUCCESSFULLY, AlertType.SUCCESS);
@@ -118,14 +118,14 @@ export default function Users() {
   }
 
   // --- Delete handler ---
-  async function handleDeleteClick(user: UserDTO) {
-    const confirmed = window.confirm(`Are you sure you want to deactivate user "${user.full_name}"?`);
+  async function handleDeleteClick(userId: string | number) {
+    const confirmed = window.confirm(`Are you sure you want to deactivate this user?`);
     if (!confirmed) return;
 
     try {
-      await deleteUserRequest(user.id).unwrap();
+      await deleteUserRequest(userId).unwrap();
       // Update local state
-      setUsers(prev => prev.map(u => u.id === user.id ? { ...u, is_active: false } : u));
+      setUsers(prev => prev.map(u => u.id === userId ? { ...u, is_active: false } : u));
       openAlert(UserActionsMessages.USER_DELETED_SUCCESSFULLY, AlertType.SUCCESS);
     } catch {
       openAlert(UserActionsMessages.USER_COULD_NOT_BE_DELETED, AlertType.ERROR);
@@ -133,13 +133,13 @@ export default function Users() {
   }
 
   // --- Restore handler ---
-  async function handleRestoreClick(user: UserDTO) {
-    const confirmed = window.confirm(`Are you sure you want to restore user "${user.full_name}"?`);
+  async function handleRestoreClick(userId: string | number) {
+    const confirmed = window.confirm(`Are you sure you want to restore this user?`);
     if (!confirmed) return;
 
     try {
-      const response = await restoreUserRequest(user.id).unwrap();
-      setUsers(prev => prev.map(u => u.id === user.id ? response : u));
+      const response = await restoreUserRequest(userId).unwrap();
+      setUsers(prev => prev.map(u => u.id === userId ? response : u));
       openAlert(UserActionsMessages.USER_RESTORED_SUCCESSFULLY, AlertType.SUCCESS);
     } catch {
       openAlert(UserActionsMessages.USER_COULD_NOT_BE_RESTORED, AlertType.ERROR);
@@ -186,10 +186,12 @@ export default function Users() {
         user={editingUser}
         onClose={() => {
           setIsEditDrawerOpen(false);
-          setEditingUser(null);
+          setEditingUser({} as UserDTO);
         }}
         direction={DrawerDirection.RIGHT_TO_LEFT}
         onSubmit={(form: UserUpdateDTO) => handleSaveEdit(form)}
+        onDelete={handleDeleteClick}
+        onRestore={handleRestoreClick}
       />
 
       {Toast}

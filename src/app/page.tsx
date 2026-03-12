@@ -2,6 +2,7 @@
 
 import { useCustomRouter } from "@/hooks";
 import { useLogInMutation } from "@/libs/store/api/authApiSlice";
+import { Card, TextField, Button } from "@mui/material";
 
 export default function LogIn() {
   const { goHome } = useCustomRouter();
@@ -21,13 +22,26 @@ export default function LogIn() {
   }
 
   return (
-    <article>
-      <section className="text-center">
-        <form method="post" className="flex flex-col gap-2 p-2" onSubmit={handleOnSubmit}>
-          <input type="text" name="username" placeholder="Email" className="rounded-md border-solid border-black border-2" />
-          <input type="password" name="password" placeholder="Password" className="rounded-md border-solid border-black border-2" />
-          <button type="submit" className="rounded-md bg-blue-400 p-2 text-white font-bold">Login</button>
-        </form>
+    <article className="bg-amber-900">
+      <section className="text-center h-screen w-screen flex flex-col items-center justify-center">
+        <label htmlFor="login-card" className="text-4xl font-bold">Login Kribi</label>
+        <Card id="login-card" className="w-1/4 h-1/2 mt-12">
+          <form method="post" className="flex flex-col h-full justify-center gap-2 p-2 bg-amber-500 " onSubmit={handleOnSubmit}>
+            <TextField
+              label="Email"
+              type="email"
+              name="username"
+              required
+            />
+            <TextField
+              label="Password"
+              type="password"
+              name="password"
+              required
+            />
+            <Button type="submit" variant="contained" color="primary">Login</Button>
+          </form>
+        </Card>
       </section>
     </article>
   );
