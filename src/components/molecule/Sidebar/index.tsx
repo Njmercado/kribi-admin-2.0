@@ -18,19 +18,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   const links = [
     {
-      name: 'Words', path: '/dashboard', icon: (
-        <LibraryBooksIcon className="w-6 h-6" />
-      ), entitlement: Action.VIEW_WORD
+      name: 'Words',
+      path: '/dashboard',
+      icon: (<LibraryBooksIcon className="w-6 h-6" />),
+      entitlement: Action.VIEW_WORD
     },
     {
-      name: 'Articles', path: '/dashboard/article', icon: (
-        <ArticleIcon className="w-6 h-6" />
-      ), entitlement: Action.VIEW_ARTICLE
+      name: 'Articles',
+      path: '/dashboard/article',
+      icon: (<ArticleIcon className="w-6 h-6" />),
+      entitlement: Action.VIEW_ARTICLE
     },
     {
-      name: 'Users', path: '/dashboard/users', icon: (
-        <PeopleIcon className="w-6 h-6" />
-      ), entitlement: Action.VIEW_USER
+      name: 'Users',
+      path: '/dashboard/users',
+      icon: (<PeopleIcon className="w-6 h-6" />),
+      entitlement: Action.VIEW_USER
     },
   ];
 

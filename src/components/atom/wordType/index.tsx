@@ -1,4 +1,4 @@
-import { WordType as WordTypeEnum } from '@/models';
+import { WORD_TYPE_SPANISH, WordType as WordTypeEnum } from '@/models';
 import { Chip } from '@/components/atom/Chip';
 
 export interface WordTypeProps {
@@ -21,11 +21,13 @@ export function WordType({ type, readOnly, onChange }: WordTypeProps) {
         value={type}
         onChange={e => onChange?.(e.target.value as WordTypeEnum)}
       >
-        {Object.values(WordTypeEnum).map((wordType) => (
-          <option key={wordType} value={wordType}>
-            {wordType}
-          </option>
-        ))}
+        {
+          Object.keys(WORD_TYPE_SPANISH).map((wordType: string) => (
+            <option key={wordType} value={WordTypeEnum[WORD_TYPE_SPANISH[wordType]]}>
+              {wordType}
+            </option>
+          ))
+        }
       </select>
       <label
         htmlFor="wordType"
