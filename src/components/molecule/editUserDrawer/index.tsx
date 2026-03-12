@@ -13,10 +13,10 @@ export interface EditUserDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit?: (user: UserUpdateDTO) => void;
-  user?: UserDTO | null;
+  user: UserDTO;
   direction?: DrawerDirection;
-  onDelete?: (user: UserDTO) => void;
-  onRestore?: (user: UserDTO) => void;
+  onDelete?: (userId: string | number) => void;
+  onRestore?: (userId: string | number) => void;
 }
 
 export function EditUserDrawer({
@@ -81,6 +81,14 @@ export function EditUserDrawer({
 
   const roleOptions = Object.values(ROLES);
   const entitlementOptions = Object.values(ENTITLEMENTS).filter(e => e !== 'NONE');
+
+  const handleActiveButton = () => {
+    if (user.is_active) {
+      onDelete?.(user.id)
+    } else {
+      onRestore?.(user.id)
+    }
+  }
 
   return (
     <Drawer
@@ -149,6 +157,12 @@ export function EditUserDrawer({
           </div>
         </section>
 
+        <section>
+          <Button id="active-button" variant="contained" color={user.is_active ? 'error' : 'primary'} onClick={() => handleActiveButton()}>
+            {user.is_active ? 'Delete' : 'Restore'}
+          </Button>
+        </section>
+
         <section className="p-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-2">
           <Button
             variant="text"
@@ -167,6 +181,6 @@ export function EditUserDrawer({
           </Button>
         </section>
       </article>
-    </Drawer>
+    </Drawer >
   );
 }
