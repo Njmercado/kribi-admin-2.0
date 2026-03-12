@@ -4,15 +4,16 @@ import { useState, useEffect } from "react";
 import { useHaveAccess, useAlert, AlertType } from "@/hooks";
 import { useCustomRouter } from "@/hooks";
 import { Action, ActionType, UserSearchType, UserActionsMessages } from "@/contants";
-import { UsersTable, EditUserDrawer } from "@/components/molecule";
+import { UsersTable, EditUserDrawer, AddUserDrawer } from "@/components/molecule";
 import { TextField, Button } from "@/components/atom";
-import { UserDTO, UserUpdateDTO } from "@/models";
+import { UserDTO, UserUpdateDTO, IUser } from "@/models";
 import { DrawerDirection } from "@/components/atom/drawer";
 import {
   useLazySearchUserQuery,
   useDeleteUserMutation,
   useRestoreUserMutation,
   useUpdateUserMutation,
+  useCreateUserMutation,
 } from "@/libs/store/api/userApiSlice";
 
 export default function Users() {
@@ -31,6 +32,7 @@ export default function Users() {
   // Edit drawer state
   const [editingUser, setEditingUser] = useState<UserDTO>({} as UserDTO);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
+  const [isAddDrawerOpen, setIsAddDrawerOpen] = useState(false);
 
   // Lazy queries
   const [searchUser] = useLazySearchUserQuery();
@@ -39,11 +41,12 @@ export default function Users() {
   const [deleteUserRequest] = useDeleteUserMutation();
   const [restoreUserRequest] = useRestoreUserMutation();
   const [updateUserRequest] = useUpdateUserMutation();
+  const [createUserRequest] = useCreateUserMutation();
 
   const { openAlert, Toast } = useAlert();
 
   useEffect(() => {
-    if (!haveAccess(Action.VIEW_USERS as ActionType)) {
+    if (!haveAccess(Action.VIEW_USER as ActionType)) {
       goHome();
     }
   }, [haveAccess, goHome]);
@@ -117,6 +120,19 @@ export default function Users() {
     }
   }
 
+  async function handleCreateUser(user: IUser) {
+    try {
+      const response = await createUserRequest(user).unwrap();
+      setIsAddDrawerOpen(false);
+      setEditingUser({} as UserDTO);
+      // Update local state with the new data
+      setUsers(prev => prev.map(u => u.id === response.id ? response : u));
+      openAlert(UserActionsMessages.USER_CREATED_SUCCESSFULLY, AlertType.SUCCESS);
+    } catch {
+      openAlert(UserActionsMessages.USER_COULD_NOT_BE_CREATED, AlertType.ERROR);
+    }
+  }
+
   // --- Delete handler ---
   async function handleDeleteClick(userId: string | number) {
     const confirmed = window.confirm(`Are you sure you want to deactivate this user?`);
@@ -166,7 +182,7 @@ export default function Users() {
         </div>
         <div className="flex gap-2">
           <Button variant="outlined" color="primary" onClick={handleOnSearch}>Search</Button>
-          <Button variant="contained" color="secondary">Add User</Button>
+          <Button variant="contained" color="secondary" onClick={() => setIsAddDrawerOpen(true)}>Add User</Button>
         </div>
       </section>
 
@@ -193,6 +209,16 @@ export default function Users() {
         onSubmit={(form: UserUpdateDTO) => handleSaveEdit(form)}
         onDelete={handleDeleteClick}
         onRestore={handleRestoreClick}
+      />
+
+      <AddUserDrawer
+        open={isAddDrawerOpen}
+        onClose={() => {
+          setIsAddDrawerOpen(false);
+          setEditingUser({} as UserDTO);
+        }}
+        direction='right'
+        onSave={(form: IUser) => handleCreateUser(form)}
       />
 
       {Toast}

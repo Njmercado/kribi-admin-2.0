@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -12,6 +12,8 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import { IconButton } from "@/components/atom/IconButton";
 import { WordDTO, WordSearchDTO } from "@/models";
+import { useLazyCheckAuthQuery } from '@/libs/store/api/authApiSlice';
+import { Action, ENTITLEMENTS } from '@/contants';
 
 export interface WordsTableProps {
   wordsResponse?: WordSearchDTO | null;
@@ -34,6 +36,17 @@ export function WordsTable({
   onRowsPerPageChange,
   setPage,
 }: WordsTableProps) {
+
+  const [canEdit, setCanEdit] = useState(false);
+  const [checkAuth] = useLazyCheckAuthQuery();
+
+  useEffect(() => {
+    checkAuth().then((res) => {
+      const entitlements = res.data?.entitlements as ENTITLEMENTS[];
+      setCanEdit(entitlements.includes(Action.EDIT_WORD as ENTITLEMENTS));
+    });
+  }, []);
+
   return (
     <TableContainer component={Paper} elevation={2} className="mt-6 border border-gray-100/50">
       <Table sx={{ minWidth: 650 }} aria-label="words table">
@@ -69,14 +82,15 @@ export function WordsTable({
                   {word.definitions.join(', ') || <i>No definitions</i>}
                 </TableCell>
                 <TableCell align="right">
-                  <IconButton
-                    color="primary"
-                    // TODO: Analyze if this call should also call the word endpoint instead of passing local word information
-                    onClick={() => onEditClick(word)}
-                    title="Edit word"
-                  >
-                    <EditIcon fontSize="small" />
-                  </IconButton>
+                  {canEdit && (
+                    <IconButton
+                      color="primary"
+                      onClick={() => onEditClick(word)}
+                      title="Edit word"
+                    >
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                  )}
                 </TableCell>
               </TableRow>
             ))}

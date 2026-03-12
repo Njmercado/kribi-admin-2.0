@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -13,7 +14,8 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import { UserDTO } from '@/models';
 import { IconButton } from '@/components/atom/IconButton';
-import { useHaveAccess } from '@/hooks';
+import { useLazyCheckAuthQuery } from '@/libs/store/api/authApiSlice';
+import { Action, ENTITLEMENTS } from '@/contants';
 
 export interface UsersTableProps {
   users: UserDTO[];
@@ -39,7 +41,15 @@ export function UsersTable({
   onRowsPerPageChange,
 }: UsersTableProps) {
 
-  const { haveAccess } = useHaveAccess();
+  const [canEdit, setCanEdit] = useState(false);
+  const [checkAuth] = useLazyCheckAuthQuery();
+
+  useEffect(() => {
+    checkAuth().then((res) => {
+      const entitlements = res.data?.entitlements as ENTITLEMENTS[];
+      setCanEdit(entitlements.includes(Action.EDIT_USER as ENTITLEMENTS));
+    });
+  }, []);
 
   return (
     <TableContainer component={Paper} elevation={0} className="rounded-xl border border-gray-100">
@@ -96,13 +106,16 @@ export function UsersTable({
                     {user.is_active ? 'Active' : 'Inactive'}
                   </span>
                 </TableCell>
-                <TableCell align="center">
-                  <div className="flex items-center justify-center gap-1">
-                    <IconButton onClick={() => onEditClick(user)}>
-                      <EditIcon className="w-5 h-5 text-gray-600 group-hover:text-primary transition-colors" />
-                    </IconButton>
-                  </div>
-                </TableCell>
+
+                {canEdit && (
+                  <TableCell align="center">
+                    <div className="flex items-center justify-center gap-1">
+                      <IconButton onClick={() => onEditClick(user)}>
+                        <EditIcon className="w-5 h-5 text-gray-600 group-hover:text-primary transition-colors" />
+                      </IconButton>
+                    </div>
+                  </TableCell>
+                )}
               </TableRow>
             ))
           ) : (

@@ -18,9 +18,7 @@ export const API_ENDPOINTS = {
     SEARCH: '/search',
   },
   USER: {
-    BY_EMAIL: '/email',
-    BY_USERNAME: '/username',
-    BY_NAME: '/name',
+    SEARCH: '/search',
     RESTORE: '/restore',
   }
 };

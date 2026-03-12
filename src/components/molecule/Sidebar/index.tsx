@@ -30,7 +30,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     {
       name: 'Users', path: '/dashboard/users', icon: (
         <PeopleIcon className="w-6 h-6" />
-      ), entitlement: Action.VIEW_USERS
+      ), entitlement: Action.VIEW_USER
     },
   ];
 
