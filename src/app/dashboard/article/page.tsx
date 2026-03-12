@@ -17,7 +17,7 @@ import {
 import { ArticleActionsMessages } from "@/contants/article.constant";
 
 export default function Article() {
-  const { haveAccess } = useHaveAccess(Action.VIEW_ARTICLE as ActionType);
+  const { haveAccess } = useHaveAccess();
   const { goHome } = useCustomRouter();
 
   const [searchInput, setSearchInput] = useState('');
@@ -40,14 +40,10 @@ export default function Article() {
 
   // Avoid SSR crashes by only checking on mount
   useEffect(() => {
-    if (!haveAccess()) {
+    if (!haveAccess(Action.VIEW_ARTICLE as ActionType)) {
       goHome();
     }
   }, [haveAccess, goHome]);
-
-  if (!haveAccess()) {
-    return null;
-  }
 
   // --- Handlers for Create/Edit/Delete ---
   function handleAddArticle() {

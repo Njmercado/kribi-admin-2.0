@@ -7,6 +7,7 @@ export const PREFIXES = {
   WORD: '/word',
   AUTH: '/auth',
   ARTICLE: '/articles',
+  USER: '/user',
 }
 
 export const API_ENDPOINTS = {
@@ -15,6 +16,12 @@ export const API_ENDPOINTS = {
   },
   ARTICLE: {
     SEARCH: '/search',
+  },
+  USER: {
+    BY_EMAIL: '/email',
+    BY_USERNAME: '/username',
+    BY_NAME: '/name',
+    RESTORE: '/restore',
   }
 };
 

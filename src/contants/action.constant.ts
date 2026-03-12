@@ -17,6 +17,7 @@ export const Action = {
   VIEW_ARTICLE: 'VIEW_ARTICLE',
   VIEW_WORD: 'VIEW_WORD',
   VIEW_USERS: 'VIEW_USERS',
+  SUPER_ADMIN: 'SUPER_ADMIN',
 }
 
 export type ActionType = keyof typeof Action;

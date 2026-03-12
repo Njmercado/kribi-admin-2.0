@@ -2,44 +2,29 @@
 
 import { useEffect, useState } from "react";
 import { useCustomRouter } from "@/hooks";
-import { useAppSelector, useAppDispatch } from "@/libs/store";
-import { setMe, clearMe } from "@/libs/store/slices";
 import { Topbar, Sidebar } from "@/components/molecule";
 import { useCheckAuthQuery, useLogOutMutation } from "@/libs/store/api/authApiSlice";
 
 export default function GeneralLayout({ children }: { children: React.ReactNode }) {
   const { goLogin } = useCustomRouter();
-  const dispatch = useAppDispatch();
-  const me = useAppSelector((state) => state.me);
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const [logOut] = useLogOutMutation();
-  // Using RTK Query, we can just call it unconditionally; 
-  // skip: true prevents it from firing if we already have the user in Redux.
-  const { data: authResponse, isError: isAuthError } = useCheckAuthQuery(undefined, {
-    skip: !!me.fullName
-  });
+  const { data: me, isError: isAuthError } = useCheckAuthQuery();
 
-  // Sync API response back into Redux store
   useEffect(() => {
-    if (isAuthError && !authResponse) {
+    if (isAuthError) {
       goLogin();
     }
-
-    if (authResponse) {
-      dispatch(setMe(authResponse));
-    }
-  }, [authResponse, dispatch, isAuthError, goLogin]);
+  }, [isAuthError, goLogin]);
 
   async function handleLogOut() {
     try {
       await logOut().unwrap();
-      dispatch(clearMe());
       goLogin();
     } catch (error) {
       console.error('Logout failed', error);
-      dispatch(clearMe());
       goLogin();
     }
   }
@@ -49,7 +34,7 @@ export default function GeneralLayout({ children }: { children: React.ReactNode 
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
       <div className="flex flex-col flex-1 w-full relative">
         <Topbar
-          userName={me.fullName}
+          userName={me?.full_name ?? null}
           onLogout={handleLogOut}
           onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
         />

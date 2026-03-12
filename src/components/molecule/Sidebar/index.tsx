@@ -4,6 +4,8 @@ import { usePathname } from 'next/navigation';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import ArticleIcon from '@mui/icons-material/Article';
 import PeopleIcon from '@mui/icons-material/People';
+import { Action, ActionType } from '@/contants';
+import { useHaveAccess } from '@/hooks';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -12,22 +14,23 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const pathname = usePathname();
+  const { haveAccess } = useHaveAccess();
 
   const links = [
     {
       name: 'Words', path: '/dashboard', icon: (
         <LibraryBooksIcon className="w-6 h-6" />
-      )
+      ), entitlement: Action.VIEW_WORD
     },
     {
       name: 'Articles', path: '/dashboard/article', icon: (
         <ArticleIcon className="w-6 h-6" />
-      )
+      ), entitlement: Action.VIEW_ARTICLE
     },
     {
       name: 'Users', path: '/dashboard/users', icon: (
         <PeopleIcon className="w-6 h-6" />
-      )
+      ), entitlement: Action.VIEW_USERS
     },
   ];
 
@@ -47,7 +50,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           <nav className="flex-1 px-4 space-y-2 mt-4">
             {links.map((link) => {
               const isActive = pathname === link.path;
-              return (
+              const haveAccessToLink = haveAccess(link.entitlement as ActionType);
+              return haveAccessToLink ? (
                 <Link
                   key={link.name}
                   href={link.path}
@@ -56,7 +60,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                   <span className={isActive ? 'text-primary' : 'text-text-secondary'}>{link.icon}</span>
                   <span className="font-medium">{link.name}</span>
                 </Link>
-              );
+              ) : null;
             })}
           </nav>
         </div>
