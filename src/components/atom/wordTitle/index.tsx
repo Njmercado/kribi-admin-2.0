@@ -10,11 +10,19 @@ export function WordTitle({ word, readOnly, onChange }: WordTitleProps) {
   return readOnly ? (
     <h2 className="text-2xl font-bold text-text-primary capitalize mb-2">{word}</h2>
   ) : (
-    <TextField
-      label="Word"
-      defaultValue={word}
-      onChange={e => onChange?.(e.target.value)}
-      fullWidth
-    />
+    <>
+      <TextField
+        label="Word"
+        defaultValue={word}
+        onChange={e => onChange?.(e.target.value)}
+        fullWidth
+        required
+      />
+      {
+        word?.length === 0 && (
+          <span className="text-red-500">This field is required *</span>
+        )
+      }
+    </>
   );
 }
