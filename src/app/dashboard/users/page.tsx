@@ -146,6 +146,9 @@ export default function Users() {
     } catch {
       openAlert(UserActionsMessages.USER_COULD_NOT_BE_DELETED, AlertType.ERROR);
     }
+
+    setIsEditDrawerOpen(false);
+    setEditingUser({} as UserDTO);
   }
 
   // --- Restore handler ---
@@ -154,12 +157,14 @@ export default function Users() {
     if (!confirmed) return;
 
     try {
-      const response = await restoreUserRequest(userId).unwrap();
-      setUsers(prev => prev.map(u => u.id === userId ? response : u));
+      await restoreUserRequest(userId).unwrap();
       openAlert(UserActionsMessages.USER_RESTORED_SUCCESSFULLY, AlertType.SUCCESS);
     } catch {
       openAlert(UserActionsMessages.USER_COULD_NOT_BE_RESTORED, AlertType.ERROR);
     }
+
+    setIsEditDrawerOpen(false);
+    setEditingUser({} as UserDTO);
   }
 
   const searchTypeOptions = Object.values(UserSearchType);
