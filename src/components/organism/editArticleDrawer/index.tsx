@@ -5,11 +5,7 @@ import { Drawer, DrawerSize } from '@/components/atom/drawer';
 import { Button, TextField } from '@/components/atom';
 import { ArticleDTO } from "@/models";
 import { DrawerDirection } from '@/components/atom/drawer';
-import '@uiw/react-md-editor/markdown-editor.css';
-import '@uiw/react-markdown-preview/markdown.css';
-import dynamic from 'next/dynamic';
-
-const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false });
+import { ArticleForm } from "@/components/molecule";
 
 export interface EditArticleDrawerProps {
   isOpen: boolean;
@@ -29,18 +25,23 @@ export function EditArticleDrawer({
   direction = DrawerDirection.RIGHT_TO_LEFT
 }: EditArticleDrawerProps) {
 
-  const [form, setForm] = useState<ArticleDTO | null>(null);
-  const [tagsInput, setTagsInput] = useState('');
+  const [form, setForm] = useState<ArticleDTO>({
+    title: '',
+    content: '',
+    tags: [],
+    summary: '',
+    published: false,
+    cover: null,
+    id: '',
+    createdAt: '',
+    updatedAt: '',
+  });
 
   useEffect(() => {
-    if (article && isOpen) {
-      setForm({ ...article });
-      setTagsInput(article.tags?.join(', ') || '');
-    } else {
-      setForm(null);
-      setTagsInput('');
+    if (article) {
+      setForm(article);
     }
-  }, [article, isOpen]);
+  }, [article]);
 
   // Check if form changed
   const hasChanged = () => {
@@ -53,6 +54,7 @@ export function EditArticleDrawer({
       form.title !== article.title ||
       form.content !== article.content ||
       form.published !== article.published ||
+      form.summary !== article.summary ||
       tagsChanged
     );
   };
@@ -83,52 +85,11 @@ export function EditArticleDrawer({
       onClose={onClose}
       size={DrawerSize.LARGE}
     >
-      <article className="drawer-content flex flex-col h-full bg-surface">
+      <article className="drawer-content flex flex-col bg-surface overflow-y-scroll max-h-screen p-4">
         <section className="p-4 border-b border-gray-100">
           <h2 className="text-xl font-bold tracking-wide">Edit Article</h2>
         </section>
-        <section className="flex-1 overflow-y-auto p-6 space-y-6">
-          <TextField
-            label="Title"
-            fullWidth
-            value={form.title}
-            onChange={(e) => setForm({ ...form, title: e.target.value })}
-          />
-
-          <div className="flex flex-col space-y-2">
-            <label className="text-sm transition-all duration-200 text-text-secondary">Tags (comma separated)</label>
-            <TextField
-              label="e.g. news, culture, updates"
-              fullWidth
-              value={tagsInput}
-              onChange={(e) => {
-                setTagsInput(e.target.value);
-                setForm({ ...form, tags: e.target.value.split(',').map(t => t.trim()).filter(t => t !== '') });
-              }}
-            />
-          </div>
-
-          <div className="flex flex-col flex-1 h-96 w-full space-y-2 mt-4" data-color-mode="light">
-            <label className="text-sm transition-all duration-200 text-text-secondary">Content</label>
-            <MDEditor
-              value={form.content}
-              onChange={(val) => setForm({ ...form, content: val || '' })}
-              height={400}
-              className="w-full h-full"
-            />
-          </div>
-
-          <div className="flex items-center space-x-2 mt-4">
-            <input
-              type="checkbox"
-              id="published"
-              checked={form.published}
-              onChange={(e) => setForm({ ...form, published: e.target.checked })}
-              className="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary"
-            />
-            <label htmlFor="published" className="text-text-primary">Publish immediately</label>
-          </div>
-        </section>
+        <ArticleForm article={form} onChange={(article) => setForm(article as ArticleDTO)} />
 
         <section className="p-4 border-t border-gray-100 bg-gray-50 flex justify-between gap-2">
           <Button
