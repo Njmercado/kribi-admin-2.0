@@ -24,7 +24,8 @@ export function EditWordDrawer({
 }: EditWordDrawerProps) {
 
   const [localWord, setLocalWord] = useState<WordDTO | null>(null);
-  const [disableSubmit, setDisableSubmit] = useState(true);
+  const [isValid, setIsValid] = useState(true);
+  const [hasChanged, setHasChanged] = useState(false);
 
   useEffect(() => {
     if (word) {
@@ -50,20 +51,16 @@ export function EditWordDrawer({
   }
 
   useEffect(() => {
-    if (!localWord || !word) {
-      setDisableSubmit(true);
-      return;
-    }
-
     const isChanged = JSON.stringify(localWord) !== JSON.stringify(word);
 
     const isInvalid =
-      localWord.word.length === 0 ||
-      localWord.translations.join('').length === 0 ||
-      localWord.definitions.join('').length === 0 ||
-      localWord.examples.join('').length === 0;
+      localWord?.word.length === 0 ||
+      localWord?.translations.length === 0 ||
+      localWord?.definitions.length === 0 ||
+      localWord?.examples.length === 0;
 
-    setDisableSubmit(!isChanged || isInvalid);
+    setIsValid(!isInvalid);
+    setHasChanged(isChanged);
   }, [localWord, word]);
 
   // Handle case when word is null but drawer might be starting to close or open
@@ -113,7 +110,7 @@ export function EditWordDrawer({
               variant="contained"
               color="primary"
               onClick={handleOnSave}
-              disabled={disableSubmit || !displayWord}
+              disabled={!(hasChanged && isValid)}
             >
               Save
             </Button>

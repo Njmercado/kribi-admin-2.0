@@ -27,11 +27,12 @@ export function WordExamples({ examples, readOnly, onChange }: WordExamplesProps
     <div className="relative flex flex-col w-full mt-4 mb-2">
       <textarea
         id="wordExamples"
-        className="peer w-full bg-transparent text-text-primary p-4 border-2 border-gray-300 focus:border-primary rounded outline-none transition-colors duration-200"
+        className={`peer w-full bg-transparent text-text-primary p-4 border-2 border-gray-300 focus:border-primary rounded outline-none transition-colors duration-200 ${examples?.length === 0 ? "border-red-500" : ""}`}
         rows={4}
         defaultValue={examples?.join("\n")}
         onChange={e => handleOnChange(e.target.value)}
         placeholder="Enter examples, one per line"
+        required
       />
       <label
         htmlFor="wordExamples"
@@ -39,6 +40,11 @@ export function WordExamples({ examples, readOnly, onChange }: WordExamplesProps
       >
         Examples
       </label>
+      {
+        examples?.length === 0 && (
+          <span className="text-red-500">This field is required *</span>
+        )
+      }
     </div>
   );
 }

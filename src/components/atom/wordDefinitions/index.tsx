@@ -27,11 +27,12 @@ export function WordDefinitions({ definitions, readOnly, onChange }: WordDefinit
     <div className="relative flex flex-col w-full mt-4 mb-2">
       <textarea
         id="wordDefinitions"
-        className="peer w-full bg-transparent text-text-primary p-4 border-2 border-gray-300 focus:border-primary rounded outline-none transition-colors duration-200"
+        className={`peer w-full bg-transparent text-text-primary p-4 border-2 border-gray-300 focus:border-primary rounded outline-none transition-colors duration-200 ${definitions?.length === 0 ? "border-red-500" : ""}`}
         rows={4}
         defaultValue={definitions?.join("\n")}
         onChange={e => handleOnChange(e.target.value)}
         placeholder="Enter definitions, one per line"
+        required
       />
       <label
         htmlFor="wordDefinitions"
@@ -39,6 +40,11 @@ export function WordDefinitions({ definitions, readOnly, onChange }: WordDefinit
       >
         Definitions
       </label>
+      {
+        definitions?.length === 0 && (
+          <span className="text-red-500">This field is required *</span>
+        )
+      }
     </div>
   );
 }

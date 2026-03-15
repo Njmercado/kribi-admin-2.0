@@ -27,11 +27,12 @@ export function WordTranslations({ translations, readOnly, onChange }: WordTrans
     <div className="relative flex flex-col w-full mt-4 mb-2">
       <textarea
         id="wordTranslations"
-        className="peer w-full bg-transparent text-text-primary p-4 border-2 border-gray-300 focus:border-primary rounded outline-none transition-colors duration-200"
+        className={`peer w-full bg-transparent text-text-primary p-4 border-2 border-gray-300 focus:border-primary rounded outline-none transition-colors duration-200 ${translations?.length === 0 ? "border-red-500" : ""}`}
         rows={4}
         defaultValue={translations?.join("\n")}
         onChange={e => handleOnChange(e.target.value)}
         placeholder="Enter translations, one per line"
+        required
       />
       <label
         htmlFor="wordTranslations"
@@ -39,6 +40,11 @@ export function WordTranslations({ translations, readOnly, onChange }: WordTrans
       >
         Translations
       </label>
+      {
+        translations?.length === 0 && (
+          <span className="text-red-500">This field is required *</span>
+        )
+      }
     </div>
   );
 }
